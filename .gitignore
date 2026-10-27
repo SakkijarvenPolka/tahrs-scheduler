@@ -1,0 +1,14 @@
+# Build outputs produced by `go build ./cmd/...` and `go build ./replay`.
+/tahrs-scheduler
+/tahrsctl
+/bin/
+dist/
+
+# Test artefacts
+*.test
+*.out
+coverage.*
+
+# Local sandbox material: kubeconfigs, rendered manifests and replay input.
+/local/
+*.log

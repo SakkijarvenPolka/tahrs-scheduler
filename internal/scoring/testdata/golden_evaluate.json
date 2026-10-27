@@ -1,0 +1,372 @@
+{
+  "cpu-general/cpu-exhausted/cpu-only": {
+    "fit": 0.18181818181818188,
+    "fitSkipped": false,
+    "pack": 0.3611533830409681,
+    "packSkipped": false,
+    "combined": 0.3073528226741322,
+    "prePenalty": 31,
+    "gpuPenalty": 0,
+    "final": 31
+  },
+  "cpu-general/cpu-exhausted/mem-heavy": {
+    "fit": 0.9242424242424242,
+    "fitSkipped": false,
+    "pack": 0.9116116523516815,
+    "packSkipped": false,
+    "combined": 0.9154008839189043,
+    "prePenalty": 92,
+    "gpuPenalty": 0,
+    "final": 92
+  },
+  "cpu-general/cpu-exhausted/small": {
+    "fit": 0.14814814814814803,
+    "fitSkipped": false,
+    "pack": 0.4211406690740832,
+    "packSkipped": false,
+    "combined": 0.33924291279630264,
+    "prePenalty": 34,
+    "gpuPenalty": 0,
+    "final": 34
+  },
+  "cpu-general/empty/cpu-only": {
+    "fit": 0.4,
+    "fitSkipped": false,
+    "pack": 0.11611652351681556,
+    "packSkipped": false,
+    "combined": 0.20128156646177087,
+    "prePenalty": 20,
+    "gpuPenalty": 0,
+    "final": 20
+  },
+  "cpu-general/empty/medium": {
+    "fit": 0.6666666666666667,
+    "fitSkipped": false,
+    "pack": 0.5,
+    "packSkipped": false,
+    "combined": 0.55,
+    "prePenalty": 55,
+    "gpuPenalty": 0,
+    "final": 55
+  },
+  "cpu-general/empty/mem-heavy": {
+    "fit": 0.6740331491712708,
+    "fitSkipped": false,
+    "pack": 0.28826795772566205,
+    "packSkipped": false,
+    "combined": 0.4039975151593447,
+    "prePenalty": 40,
+    "gpuPenalty": 0,
+    "final": 40
+  },
+  "cpu-general/empty/small": {
+    "fit": 0.15384615384615385,
+    "fitSkipped": false,
+    "pack": 0.09321136696581822,
+    "packSkipped": false,
+    "combined": 0.11140180302991891,
+    "prePenalty": 11,
+    "gpuPenalty": 0,
+    "final": 11
+  },
+  "cpu-general/empty/tiny": {
+    "fit": 0.036809815950920144,
+    "fitSkipped": false,
+    "pack": 0.020301285949348546,
+    "packSkipped": false,
+    "combined": 0.025253844949820026,
+    "prePenalty": 3,
+    "gpuPenalty": 0,
+    "final": 3
+  },
+  "cpu-general/empty/zero": {
+    "fit": 0.5,
+    "fitSkipped": true,
+    "pack": 0,
+    "packSkipped": false,
+    "combined": 0.15,
+    "prePenalty": 15,
+    "gpuPenalty": 0,
+    "final": 15
+  },
+  "cpu-general/gpu-empty/gpu1": {
+    "fit": 0.46153846153846156,
+    "fitSkipped": false,
+    "pack": 0.36262256080090194,
+    "packSkipped": false,
+    "combined": 0.3922973310221698,
+    "prePenalty": 39,
+    "gpuPenalty": 0,
+    "final": 39
+  },
+  "cpu-general/gpu-empty/gpu3": {
+    "fit": 0.75,
+    "fitSkipped": false,
+    "pack": 0.6464466094067263,
+    "packSkipped": false,
+    "combined": 0.6775126265847083,
+    "prePenalty": 68,
+    "gpuPenalty": 0,
+    "final": 68
+  },
+  "cpu-general/gpu-empty/small": {
+    "fit": 0.04878048780487809,
+    "fitSkipped": false,
+    "pack": 0.03877671932453697,
+    "packSkipped": false,
+    "combined": 0.041777849868639305,
+    "prePenalty": 4,
+    "gpuPenalty": 30,
+    "final": 0
+  },
+  "cpu-general/gpu-exhausted/gpu1": {
+    "fit": 0.75,
+    "fitSkipped": false,
+    "pack": 0.8232233047033631,
+    "packSkipped": false,
+    "combined": 0.8012563132923541,
+    "prePenalty": 80,
+    "gpuPenalty": 0,
+    "final": 80
+  },
+  "cpu-general/gpu-exhausted/gpu3": {
+    "fit": 0.9090909090909091,
+    "fitSkipped": false,
+    "pack": 0.6464466094067263,
+    "packSkipped": false,
+    "combined": 0.7252398993119811,
+    "prePenalty": 73,
+    "gpuPenalty": 0,
+    "final": 73
+  },
+  "cpu-general/gpu-exhausted/small": {
+    "fit": 0.09523809523809523,
+    "fitSkipped": false,
+    "pack": 0.5384670160080647,
+    "packSkipped": false,
+    "combined": 0.40549833977707384,
+    "prePenalty": 41,
+    "gpuPenalty": 30,
+    "final": 11
+  },
+  "cpu-general/gpu-half/gpu1": {
+    "fit": 0.75,
+    "fitSkipped": false,
+    "pack": 0.8232233047033631,
+    "packSkipped": false,
+    "combined": 0.8012563132923541,
+    "prePenalty": 80,
+    "gpuPenalty": 0,
+    "final": 80
+  },
+  "cpu-general/gpu-half/gpu3": {
+    "fit": 0.9090909090909091,
+    "fitSkipped": false,
+    "pack": 0.6464466094067263,
+    "packSkipped": false,
+    "combined": 0.7252398993119811,
+    "prePenalty": 73,
+    "gpuPenalty": 0,
+    "final": 73
+  },
+  "cpu-general/gpu-half/medium": {
+    "fit": 0.46153846153846156,
+    "fitSkipped": false,
+    "pack": 0.681311280400451,
+    "packSkipped": false,
+    "combined": 0.6153794347418542,
+    "prePenalty": 62,
+    "gpuPenalty": 30,
+    "final": 32
+  },
+  "cpu-general/gpu-half/zero": {
+    "fit": 0.5,
+    "fitSkipped": true,
+    "pack": 0.5,
+    "packSkipped": false,
+    "combined": 0.5,
+    "prePenalty": 50,
+    "gpuPenalty": 30,
+    "final": 20
+  },
+  "cpu-general/half/medium": {
+    "fit": 1,
+    "fitSkipped": false,
+    "pack": 1,
+    "packSkipped": false,
+    "combined": 1,
+    "prePenalty": 100,
+    "gpuPenalty": 0,
+    "final": 100
+  },
+  "cpu-general/half/small": {
+    "fit": 0.2857142857142857,
+    "fitSkipped": false,
+    "pack": 0.5925498496748345,
+    "packSkipped": false,
+    "combined": 0.5004991804866699,
+    "prePenalty": 50,
+    "gpuPenalty": 0,
+    "final": 50
+  },
+  "cpu-general/half/tiny": {
+    "fit": 0.07228915662650592,
+    "fitSkipped": false,
+    "pack": 0.5202895974522754,
+    "packSkipped": false,
+    "combined": 0.38588946520454454,
+    "prePenalty": 39,
+    "gpuPenalty": 0,
+    "final": 39
+  },
+  "cpu-general/overcommitted/small": {
+    "fit": 0,
+    "fitSkipped": false,
+    "pack": 0,
+    "packSkipped": false,
+    "combined": 0,
+    "prePenalty": 0,
+    "gpuPenalty": 0,
+    "final": 0
+  },
+  "cpu-general/overcommitted/tiny": {
+    "fit": 0,
+    "fitSkipped": false,
+    "pack": 0,
+    "packSkipped": false,
+    "combined": 0,
+    "prePenalty": 0,
+    "gpuPenalty": 0,
+    "final": 0
+  },
+  "cpu-general/tight/cpu-only": {
+    "fit": 0.6666666666666667,
+    "fitSkipped": false,
+    "pack": 0.875,
+    "packSkipped": false,
+    "combined": 0.8125,
+    "prePenalty": 81,
+    "gpuPenalty": 0,
+    "final": 81
+  },
+  "cpu-general/tight/medium": {
+    "fit": 0.4,
+    "fitSkipped": false,
+    "pack": 0.625,
+    "packSkipped": false,
+    "combined": 0.5575,
+    "prePenalty": 56,
+    "gpuPenalty": 0,
+    "final": 56
+  },
+  "cpu-general/tight/small": {
+    "fit": 0.8,
+    "fitSkipped": false,
+    "pack": 0.9558058261758408,
+    "packSkipped": false,
+    "combined": 0.9090640783230884,
+    "prePenalty": 91,
+    "gpuPenalty": 0,
+    "final": 91
+  },
+  "gpu-inference/gpu-empty/gpu1": {
+    "fit": 0.4477611940298507,
+    "fitSkipped": false,
+    "pack": 0.3040294546462473,
+    "packSkipped": false,
+    "combined": 0.3471489764613283,
+    "prePenalty": 35,
+    "gpuPenalty": 0,
+    "final": 35
+  },
+  "gpu-inference/gpu-empty/gpu3": {
+    "fit": 0.7764705882352941,
+    "fitSkipped": false,
+    "pack": 0.6938137821521028,
+    "packSkipped": false,
+    "combined": 0.7186108239770601,
+    "prePenalty": 72,
+    "gpuPenalty": 0,
+    "final": 72
+  },
+  "gpu-inference/gpu-empty/small": {
+    "fit": 0.04878048780487809,
+    "fitSkipped": false,
+    "pack": 0.019196707970323912,
+    "packSkipped": false,
+    "combined": 0.028071841920690163,
+    "prePenalty": 3,
+    "gpuPenalty": 0,
+    "final": 3
+  },
+  "gpu-inference/gpu-exhausted/gpu1": {
+    "fit": 0.6857142857142857,
+    "fitSkipped": false,
+    "pack": 0.7834936490538904,
+    "packSkipped": false,
+    "combined": 0.754159840052009,
+    "prePenalty": 75,
+    "gpuPenalty": 0,
+    "final": 75
+  },
+  "gpu-inference/gpu-exhausted/gpu3": {
+    "fit": 0.7547169811320755,
+    "fitSkipped": false,
+    "pack": 0.4136980300220713,
+    "packSkipped": false,
+    "combined": 0.5160037153550725,
+    "prePenalty": 52,
+    "gpuPenalty": 0,
+    "final": 52
+  },
+  "gpu-inference/gpu-exhausted/small": {
+    "fit": 0.09523809523809523,
+    "fitSkipped": false,
+    "pack": 0.6736468972780403,
+    "packSkipped": false,
+    "combined": 0.5001242566660568,
+    "prePenalty": 50,
+    "gpuPenalty": 0,
+    "final": 50
+  },
+  "gpu-inference/gpu-half/gpu1": {
+    "fit": 0.7317073170731707,
+    "fitSkipped": false,
+    "pack": 0.7834936490538904,
+    "packSkipped": false,
+    "combined": 0.7679577494596744,
+    "prePenalty": 77,
+    "gpuPenalty": 0,
+    "final": 77
+  },
+  "gpu-inference/gpu-half/gpu3": {
+    "fit": 0.8813559322033898,
+    "fitSkipped": false,
+    "pack": 0.6938137821521028,
+    "packSkipped": false,
+    "combined": 0.7500764271674889,
+    "prePenalty": 75,
+    "gpuPenalty": 0,
+    "final": 75
+  },
+  "gpu-inference/gpu-half/medium": {
+    "fit": 0.46153846153846156,
+    "fitSkipped": false,
+    "pack": 0.5807372542187894,
+    "packSkipped": false,
+    "combined": 0.5449776164146911,
+    "prePenalty": 54,
+    "gpuPenalty": 0,
+    "final": 54
+  },
+  "gpu-inference/gpu-half/zero": {
+    "fit": 0.5,
+    "fitSkipped": true,
+    "pack": 0.5,
+    "packSkipped": false,
+    "combined": 0.5,
+    "prePenalty": 50,
+    "gpuPenalty": 0,
+    "final": 50
+  }
+}
