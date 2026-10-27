@@ -1,0 +1,6 @@
+name: llama-7b-replica-3
+profile: gpu-inference-v1
+requests:
+  cpu: "2"
+  memory: 8Gi
+  nvidia.com/gpu: "1"

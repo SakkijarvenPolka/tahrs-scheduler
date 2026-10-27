@@ -1,0 +1,10 @@
+nodes:
+- name: gpu-node-1
+  allocatable: {cpu: "16", memory: 64Gi, nvidia.com/gpu: "4"}
+  requested: {cpu: "8", memory: 32Gi, nvidia.com/gpu: "1"}
+- name: gpu-node-2
+  allocatable: {cpu: "16", memory: 64Gi, nvidia.com/gpu: "4"}
+  requested: {cpu: "2", memory: 8Gi, nvidia.com/gpu: "3"}
+- name: cpu-node-1
+  allocatable: {cpu: "32", memory: 128Gi}
+  requested: {cpu: "4", memory: 16Gi}
