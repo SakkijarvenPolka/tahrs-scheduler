@@ -1,0 +1,20 @@
+# Example tahrs-scheduler configuration (plan §4.2). Copied verbatim into the
+# repository so the loader, the fingerprint golden and the documentation all
+# describe the same file.
+configVersion: "2026-10-tahrs1"
+gpuResourceName: nvidia.com/gpu
+defaultProfile: cpu-general-v1
+gpuAvoidPenalty: 30
+profiles:
+  cpu-general-v1:
+    alpha: 0.3
+    beta: 0.7
+    fitWeights:  {cpu: 1, memory: 1}
+    packWeights: {cpu: 1, memory: 1}
+    gpuNodePolicy: avoid
+  gpu-inference-v1:
+    alpha: 0.3
+    beta: 0.7
+    fitWeights:  {cpu: 1, memory: 1, gpu: 3}
+    packWeights: {cpu: 1, memory: 1, gpu: 2}
+    gpuNodePolicy: allow

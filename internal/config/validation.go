@@ -51,11 +51,15 @@ func (s *Setting) Validate() error {
 	} else if _, ok := s.Profiles[s.DefaultProfile]; !ok {
 		add("defaultProfile=%q is not defined in profiles %v", s.DefaultProfile, sortedNames(s.Profiles))
 	}
-	// GPUResourceName is defaulted in the loader, so the "gpu weights but no
-	// resource name" rule from §4.3 cannot trigger; the check below still
-	// guards callers that build a Setting programmatically.
+	// The loader defaults GPUResourceName, so the §4.3 rule "gpu weights but no
+	// resource name" cannot trigger from a file; the check still guards callers
+	// that build a Setting programmatically.
 	if s.GPUResourceName == "" {
-		add("gpuResourceName must not be empty")
+		if s.HasGPUWeight() {
+			add("gpuResourceName must not be empty when %q weights are used", DimGPU)
+		} else {
+			add("gpuResourceName must not be empty")
+		}
 	}
 
 	names := make([]string, 0, len(s.Profiles))
