@@ -1,0 +1,16 @@
+# Binds the generated role (see clusterrole.yaml, `make rbac`) to the scheduler's
+# own ServiceAccount. No default user or system:kube-scheduler binding is used.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tahrs-scheduler-binding
+  labels:
+    app.kubernetes.io/name: tahrs-scheduler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tahrs-scheduler-role
+subjects:
+- kind: ServiceAccount
+  name: tahrs-scheduler
+  namespace: tahrs-system

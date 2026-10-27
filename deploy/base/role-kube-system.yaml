@@ -1,0 +1,36 @@
+# The scheduler serves a secure endpoint with delegated authentication, so it must
+# read the api-server's client CA bundle from
+# kube-system/extension-apiserver-authentication (component-base's delegated
+# authenticator reads that ConfigMap on startup).
+#
+# This is a namespaced Role on purpose: putting ConfigMap reads in the ClusterRole
+# would grant them in every namespace, which is broader than the api-server
+# contract needs.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tahrs-scheduler-authentication
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: tahrs-scheduler
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["extension-apiserver-authentication"]
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tahrs-scheduler-authentication
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: tahrs-scheduler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tahrs-scheduler-authentication
+subjects:
+- kind: ServiceAccount
+  name: tahrs-scheduler
+  namespace: tahrs-system

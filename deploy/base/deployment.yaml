@@ -1,0 +1,70 @@
+# Single replica (plan §7). The scheduler pod itself is scheduled by the cluster's
+# default scheduler, so tahrs never has to schedule its own pod.
+#
+# Probes are deliberately omitted: kube-scheduler's secure endpoint authenticates
+# requests and the scheduler has no unauthenticated health path to probe, so a
+# failing probe would restart a healthy process. Replica count, lease status and
+# the startup fingerprint are the health signals instead.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tahrs-scheduler
+  namespace: tahrs-system
+  labels:
+    app.kubernetes.io/name: tahrs-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tahrs-scheduler
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tahrs-scheduler
+    spec:
+      serviceAccountName: tahrs-scheduler
+      priorityClassName: system-cluster-critical
+      hostNetwork: false
+      containers:
+      - name: scheduler
+        # Image built by `make image` from the Dockerfile at the repository root.
+        # imagePullPolicy IfNotPresent lets a locally imported image be used on a
+        # single-node test cluster.
+        image: tahrs-scheduler:v0.1.0
+        imagePullPolicy: IfNotPresent
+        # args (not command) so the image entrypoint decides where the binary
+        # lives: /tahrs-scheduler in the Dockerfile image, /ko-app/... in a ko build.
+        args:
+        - --config=/etc/tahrs/kube-scheduler-config.yaml
+        - --secure-port=10259
+        - --v=2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - name: config
+          mountPath: /etc/tahrs
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: tahrs-config
+          items:
+          - key: kube-scheduler-config.yaml
+            path: kube-scheduler-config.yaml
+          - key: tahrs-config.yaml
+            path: tahrs-config.yaml

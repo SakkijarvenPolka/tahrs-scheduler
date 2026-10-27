@@ -1,0 +1,63 @@
+# Two files are mounted read-only into the scheduler:
+#   kube-scheduler-config.yaml  the framework configuration (what --config points at)
+#   tahrs-config.yaml           scoring profiles and their parameters (plan §4)
+#
+# Changing either file requires a rollout; the scheduler has no hot reload (plan §4.4).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tahrs-config
+  namespace: tahrs-system
+  labels:
+    app.kubernetes.io/name: tahrs-scheduler
+data:
+  kube-scheduler-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1
+    kind: KubeSchedulerConfiguration
+    leaderElection:
+      leaderElect: true
+      resourceNamespace: tahrs-system
+      resourceName: tahrs-scheduler
+    # Score every feasible node: the whole point of the plugin is node ordering,
+    # sampling 50% of a heterogeneous pool would hide the difference (plan §11.8).
+    percentageOfNodesToScore: 100
+    profiles:
+    - schedulerName: tahrs-scheduler
+      plugins:
+        preFilter:
+          enabled:
+          - name: tahrs
+        preScore:
+          enabled:
+          - name: tahrs
+        score:
+          enabled:
+          - name: tahrs
+            weight: 5
+          # Both native scores are replaced by tahrs, but their PreFilter/Filter
+          # stages stay enabled so resource fit is still a hard constraint (plan §5.2).
+          disabled:
+          - name: NodeResourcesFit
+          - name: NodeResourcesBalancedAllocation
+      pluginConfig:
+      - name: tahrs
+        args:
+          configPath: /etc/tahrs/tahrs-config.yaml
+  tahrs-config.yaml: |
+    configVersion: "2026-10-tahrs1"
+    gpuResourceName: nvidia.com/gpu
+    defaultProfile: cpu-general-v1
+    gpuAvoidPenalty: 30
+    profiles:
+      cpu-general-v1:
+        alpha: 0.3
+        beta: 0.7
+        fitWeights:  {cpu: 1, memory: 1}
+        packWeights: {cpu: 1, memory: 1}
+        gpuNodePolicy: avoid
+      gpu-inference-v1:
+        alpha: 0.3
+        beta: 0.7
+        fitWeights:  {cpu: 1, memory: 1, gpu: 3}
+        packWeights: {cpu: 1, memory: 1, gpu: 2}
+        gpuNodePolicy: allow

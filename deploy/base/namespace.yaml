@@ -1,0 +1,8 @@
+# The scheduler and its lease live in their own namespace (plan §7), so it can be
+# uninstalled without touching kube-system.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tahrs-system
+  labels:
+    app.kubernetes.io/name: tahrs-scheduler

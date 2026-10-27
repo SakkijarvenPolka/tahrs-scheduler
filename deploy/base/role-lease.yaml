@@ -1,0 +1,34 @@
+# Leader election (plan §7): create is not scoped by name, get/update is scoped to
+# the single lease the scheduler owns. Splitting the two rules keeps the
+# resourceNames restriction on the verbs that can mutate an existing lease.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tahrs-scheduler-lease
+  namespace: tahrs-system
+  labels:
+    app.kubernetes.io/name: tahrs-scheduler
+rules:
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["create"]
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  resourceNames: ["tahrs-scheduler"]
+  verbs: ["get", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tahrs-scheduler-lease
+  namespace: tahrs-system
+  labels:
+    app.kubernetes.io/name: tahrs-scheduler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tahrs-scheduler-lease
+subjects:
+- kind: ServiceAccount
+  name: tahrs-scheduler
+  namespace: tahrs-system

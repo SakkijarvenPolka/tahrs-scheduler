@@ -1,0 +1,48 @@
+# GPU workload接入示例（plan §9）。调度器只认 Pod 原生字段：schedulerName、profile
+# 注解，以及工作负载自己声明的硬约束（污点容忍 + nodeAffinity）。
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-demo
+  namespace: default
+  labels:
+    app.kubernetes.io/name: gpu-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gpu-demo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: gpu-demo
+        scheduling.example.com/pool: heterogeneous
+      annotations:
+        # 可选：不写就用 defaultProfile（cpu-general-v1）。写错画像会被 PreFilter 拒绝。
+        scheduling.example.com/profile: gpu-inference-v1
+    spec:
+      schedulerName: tahrs-scheduler
+      # 节点池隔离（plan §7）：GPU 池节点带 dedicated=tahrs:NoSchedule 污点，
+      # 只有显式容忍它的工作负载才能落上去，从而避免与 default scheduler 重复承诺资源。
+      tolerations:
+      - key: scheduling.example.com/dedicated
+        operator: Equal
+        value: tahrs
+        effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: scheduling.example.com/pool
+                operator: In
+                values: ["heterogeneous"]
+      containers:
+      - name: inference
+        image: registry.k8s.io/pause:3.10
+        # 扩展资源只写 limits 也合法（QoS=Guaranteed）；适配器会把 limits 计入请求量。
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+            nvidia.com/gpu: "1"
