@@ -14,6 +14,7 @@ import (
 
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	utilfeature "k8s.io/apiserver/pkg/util/feature"
 	fwk "k8s.io/kube-scheduler/framework"
 	schedulerconfig "k8s.io/kubernetes/pkg/scheduler/apis/config"
 	"k8s.io/kubernetes/pkg/scheduler/backend/cache"
@@ -40,6 +41,12 @@ const (
 	// multiplies the plugin's 0-100 score by the weight of its Score entry.
 	scoreWeight int32 = 5
 )
+
+// schedulerFeatures mirrors the feature gates the scheduler binary wires into
+// the native plugins. Passing a zero feature.Features would silently disable
+// sidecar containers and pod-level resources, so NodeResourcesFit would
+// compute requests differently here than in a real cluster.
+var schedulerFeatures = feature.NewSchedulerFeaturesFromGates(utilfeature.DefaultFeatureGate)
 
 // TestMain installs the scheduler's own metrics because the framework runtime
 // instruments every plugin through them (setInstrumentedPlugins).
@@ -167,10 +174,10 @@ func nativePluginsRegistrar(reg *frameworkruntime.Registry, profile *schedulerco
 		if !ok {
 			return nil, fmt.Errorf("NodeResourcesFit: want args of type *NodeResourcesFitArgs, got %T", obj)
 		}
-		return noderesources.NewFit(ctx, args, h, feature.Features{})
+		return noderesources.NewFit(ctx, args, h, schedulerFeatures)
 	})
 	reg.Register(tainttoleration.Name, func(ctx context.Context, obj runtime.Object, h fwk.Handle) (fwk.Plugin, error) {
-		return tainttoleration.New(ctx, obj, h, feature.Features{})
+		return tainttoleration.New(ctx, obj, h, schedulerFeatures)
 	})
 
 	profile.Plugins.PreFilter.Enabled = append(profile.Plugins.PreFilter.Enabled,
@@ -203,8 +210,11 @@ type result struct {
 	filterStatus  map[string]fwk.Code
 	filterMessage map[string]string
 	feasible      []string
-	scoring       *fwk.Status
-	scores        map[string]int64
+	// selected is set when exactly one node survived filtering: the
+	// scheduler returns that node without running PreScore/Score.
+	selected string
+	scoring  *fwk.Status
+	scores   map[string]int64
 }
 
 // run executes the framework in the same order the scheduling cycle does:
@@ -238,7 +248,14 @@ func (e *env) run(pod *v1.Pod) *result {
 		}
 		res.filterMessage[name] = status.Message()
 	}
-	if len(feasible) == 0 {
+	switch len(feasible) {
+	case 0:
+		return res
+	case 1:
+		// Upstream schedule_one.go returns the only feasible node without
+		// running PreScore/Score. Mirroring that keeps the harness honest: a
+		// single-node pool never exercises the scoring extension points.
+		res.selected = feasible[0].Node().Name
 		return res
 	}
 

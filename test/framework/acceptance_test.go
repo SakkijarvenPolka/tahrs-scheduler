@@ -52,7 +52,13 @@ func TestUnknownProfileRejectedInPreFilter(t *testing.T) {
 			if got := statusCode(ok.preFilter); got != fwk.Success {
 				t.Fatalf("default profile prefilter code = %v, want success (message %q)", got, ok.preFilter.Message())
 			}
-			if len(ok.scores) != nodeCount {
+			if nodeCount == 1 {
+				// A single feasible node is returned un-scored (upstream
+				// schedule_one.go), so the control checks selection instead.
+				if ok.selected != "node-0" {
+					t.Fatalf("default profile selected %q, want node-0", ok.selected)
+				}
+			} else if len(ok.scores) != nodeCount {
 				t.Fatalf("scored %d nodes, want %d", len(ok.scores), nodeCount)
 			}
 		})
@@ -79,8 +85,8 @@ func TestCPUWorkloadNeverLandsOnTaintedGPUNode(t *testing.T) {
 	if got := res.filterStatus["cpu-1"]; got != fwk.Success {
 		t.Fatalf("cpu-1 filter verdict = %v, want success (message %q)", got, res.filterMessage["cpu-1"])
 	}
-	if ranking := res.ranking(); len(ranking) != 1 || ranking[0] != "cpu-1" {
-		t.Fatalf("ranking = %v, want [cpu-1]", ranking)
+	if res.selected != "cpu-1" {
+		t.Fatalf("selected %q, want cpu-1: the only feasible node is returned without scoring", res.selected)
 	}
 }
 
@@ -264,8 +270,8 @@ func TestAnomalousNodeGetsMinScore(t *testing.T) {
 		if got := res.filterStatus["gpu-broken"]; !isUnschedulable(got) {
 			t.Fatalf("gpu-broken filter verdict = %v, want an unschedulable code", got)
 		}
-		if ranking := res.ranking(); len(ranking) != 1 || ranking[0] != "gpu-ok" {
-			t.Fatalf("ranking = %v, want [gpu-ok]", ranking)
+		if res.selected != "gpu-ok" {
+			t.Fatalf("selected %q, want gpu-ok: the only feasible node is returned without scoring", res.selected)
 		}
 	})
 }

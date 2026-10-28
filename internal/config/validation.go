@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 )
@@ -69,7 +70,14 @@ func (s *Setting) Validate() error {
 	sort.Strings(names)
 	for _, name := range names {
 		p := s.Profiles[name]
+		// NaN and Inf defeat every comparison below (NaN < 0 is false), so they
+		// are rejected first. A NaN alpha would otherwise turn the combined
+		// score into NaN and be silently clamped to a maximum score later.
 		switch {
+		case !isFinite(p.Alpha):
+			add("profiles[%s].alpha=%v must be a finite number", name, p.Alpha)
+		case !isFinite(p.Beta):
+			add("profiles[%s].beta=%v must be a finite number", name, p.Beta)
 		case p.Alpha < 0:
 			add("profiles[%s].alpha=%v must not be negative", name, p.Alpha)
 		case p.Beta < 0:
@@ -82,7 +90,7 @@ func (s *Setting) Validate() error {
 		}
 		problems = append(problems, validateWeights(name, "fitWeights", p.FitWeights)...)
 		problems = append(problems, validateWeights(name, "packWeights", p.PackWeights)...)
-		if isZeroWeights(p.FitWeights) && isZeroWeights(p.PackWeights) {
+		if allZeroWeights(p.FitWeights, p.PackWeights) {
 			add("profiles[%s]: all fitWeights and packWeights are 0", name)
 		}
 	}
@@ -91,6 +99,11 @@ func (s *Setting) Validate() error {
 		return nil
 	}
 	return &ValidationError{Problems: problems}
+}
+
+// isFinite reports whether v can participate in the scoring arithmetic.
+func isFinite(v float64) bool {
+	return !math.IsNaN(v) && !math.IsInf(v, 0)
 }
 
 func isPolicy(policy string) bool {
@@ -107,7 +120,10 @@ func validateWeights(profile, field string, weights map[string]float64) []string
 	for _, k := range keys {
 		switch k {
 		case DimCPU, DimMemory, DimGPU:
-			if weights[k] < 0 {
+			switch {
+			case !isFinite(weights[k]):
+				problems = append(problems, fmt.Sprintf("profiles[%s].%s.%s=%v must be a finite number", profile, field, k, weights[k]))
+			case weights[k] < 0:
 				problems = append(problems, fmt.Sprintf("profiles[%s].%s.%s=%v must not be negative", profile, field, k, weights[k]))
 			}
 		default:
@@ -117,10 +133,15 @@ func validateWeights(profile, field string, weights map[string]float64) []string
 	return problems
 }
 
-func isZeroWeights(weights map[string]float64) bool {
-	for _, v := range weights {
-		if v != 0 {
-			return false
+// allZeroWeights reports whether every weight of both vectors is zero. NaN is
+// not zero, so an all-NaN profile is rejected by the finite checks instead of
+// slipping through here.
+func allZeroWeights(fit, pack map[string]float64) bool {
+	for _, weights := range []map[string]float64{fit, pack} {
+		for _, v := range weights {
+			if v != 0 {
+				return false
+			}
 		}
 	}
 	return true

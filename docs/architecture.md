@@ -95,8 +95,11 @@ Pod 照常被绑定，配置错误永远不会暴露。所以：
 它满足我们需要的三个性质：剩余与请求越接近越接近 1；两维都放大不改变分数（尺度无关）；某一维为 0 时只按该维权重计入偏差。
 `q` 在某一维为 0（例如 CPU Pod 的 GPU 维）直接跳过该维，避免「请求 0 个 GPU 就等于最不合适」。
 
-**pack**：`Σ w·(used) / Σ w·(allocatable)`，即 MostAllocated 方向——已用比例越高越受欢迎，用于减少碎片。
-`used` 取节点当前已用，不含本次请求；超过 allocatable（超卖节点）时 floor 到 0。
+**pack**：`1 − sqrt( Σ v_k(1 − u'_k)² / Σ v_k )`，其中 `u'_k = (U_k + q_k) / A_k` 是「本次请求
+放上去之后」该维的使用率。它与上游 `MostAllocated` 同向——已用比例越高越受欢迎，用于减少碎片——
+区别在于按权重对各维做均方合成，而不是按容量加权求和，因此不会被大容量维度单方面主导。
+超卖节点上 `u'_k > 1`，偏差 `1 − u'_k` 为负但取平方后仍为正，分数自然被压低，不需要额外 floor；
+`A_k = 0` 且 `q_k > 0` 的维度是 Filter 本应已排除的异常，回退到 MinScore 而不是参与排序。
 
 **F12 的诚实结论**：pack 与上游 `MostAllocated` 同向，但 fit 与 pack 并不总是同向。单测里的分歧用例
 （`internal/scoring/evaluate_test.go` 的 `TestFitAndPackDisagree`）：请求 `q=(500m, 1Gi)`，

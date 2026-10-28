@@ -49,7 +49,7 @@ flowchart LR
 ## 快速开始
 
 ```bash
-make build          # ./tahrs-scheduler 与 ./tahrsctl
+make build          # ./bin/tahrs-scheduler 与 ./bin/tahrsctl
 make test           # go test -race ./...
 make lint           # gofmt -l 检查
 ```
@@ -59,7 +59,7 @@ make lint           # gofmt -l 检查
 `docs/examples/` 里有三份可直接跑的文件：配置、一个 GPU 工作负载、一个三节点快照。
 
 ```bash
-./tahrsctl replay \
+./bin/tahrsctl replay \
   --config docs/examples/tahrs-config.yaml \
   --pod   docs/examples/workload.yaml \
   --nodes docs/examples/cluster.yaml

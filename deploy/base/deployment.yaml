@@ -1,10 +1,11 @@
 # Single replica (plan §7). The scheduler pod itself is scheduled by the cluster's
 # default scheduler, so tahrs never has to schedule its own pod.
 #
-# Probes are deliberately omitted: kube-scheduler's secure endpoint authenticates
-# requests and the scheduler has no unauthenticated health path to probe, so a
-# failing probe would restart a healthy process. Replica count, lease status and
-# the startup fingerprint are the health signals instead.
+# Probes: kube-scheduler serves /healthz, /livez and /readyz on its secure port and
+# the default system:public-info-viewer ClusterRole authorises those paths for the
+# unauthenticated group, so an anonymous HTTPS GET succeeds (the same shape kubeadm
+# uses for its static pod). Replica count, lease holder and the startup fingerprint
+# remain the signals for whether the scheduler is actually scheduling pods.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,6 +39,32 @@ spec:
         - --config=/etc/tahrs/kube-scheduler-config.yaml
         - --secure-port=10259
         - --v=2
+        # A distroless image has no shell and no curl, so exec probes are not an
+        # option; these are plain HTTP GETs against the secure port, which is what
+        # kubeadm's static pod does.
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 10259
+            scheme: HTTPS
+          periodSeconds: 10
+          failureThreshold: 30
+        livenessProbe:
+          httpGet:
+            path: /livez
+            port: 10259
+            scheme: HTTPS
+          timeoutSeconds: 5
+          periodSeconds: 20
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 10259
+            scheme: HTTPS
+          timeoutSeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3
         resources:
           requests:
             cpu: 100m

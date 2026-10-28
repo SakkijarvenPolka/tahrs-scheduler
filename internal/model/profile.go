@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"math"
 )
 
 // GPUPolicy controls the soft preference applied to GPU capable nodes when the
@@ -42,10 +43,14 @@ func (w Weights) IsZero() bool {
 	return w.CPU == 0 && w.Memory == 0 && w.GPU == 0
 }
 
-// Validate rejects negative weights.
+// Validate rejects negative and non-finite weights.
 func (w Weights) Validate(name string) error {
 	for _, d := range Dimensions {
-		if v := w.Get(d); v < 0 {
+		v := w.Get(d)
+		if !isFinite(v) {
+			return fmt.Errorf("%s weight for %q is not finite: %v", name, d, v)
+		}
+		if v < 0 {
 			return fmt.Errorf("%s weight for %q is negative: %v", name, d, v)
 		}
 	}
@@ -71,6 +76,12 @@ type ProfileView struct {
 // method exists because Evaluate is a public library entry point that must not
 // silently produce a meaningless score for a malformed profile.
 func (p ProfileView) Validate() error {
+	if !isFinite(p.Alpha) {
+		return fmt.Errorf("profile %q: alpha is not finite: %v", p.Name, p.Alpha)
+	}
+	if !isFinite(p.Beta) {
+		return fmt.Errorf("profile %q: beta is not finite: %v", p.Name, p.Beta)
+	}
 	if p.Alpha < 0 {
 		return fmt.Errorf("profile %q: alpha is negative: %v", p.Name, p.Alpha)
 	}
@@ -131,3 +142,8 @@ var ErrGPUNodeInsufficient = errors.New("node allocatable is zero for a requeste
 
 // ErrInvalidNumeric is returned when a scoring component produced NaN or Inf.
 var ErrInvalidNumeric = errors.New("scoring produced a non-finite value")
+
+// isFinite reports whether v can participate in the scoring arithmetic.
+func isFinite(v float64) bool {
+	return !math.IsNaN(v) && !math.IsInf(v, 0)
+}

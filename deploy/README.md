@@ -30,16 +30,22 @@ make rbac
 
 对上游角色做了三处刻意偏离，生成器头部注释里也写了：
 
-1. **Lease 权限拆两条**：`create` 不加 `resourceNames`（首次竞选要能创建），
-   `get/update` 限定到 `tahrs-scheduler` 这一条 Lease；上游的 `list/watch` 与
-   `kube-scheduler` 名字被丢掉，因为 leader election 只需要 get/create/update。
+1. **Lease 权限不进 ClusterRole**：上游把 leases 规则放在 `system:kube-scheduler` 里
+   （policy.go 上还挂着 `TODO: scope this to the kube-system namespace`），经
+   ClusterRoleBinding 之后等于每个命名空间都能建 Lease。本仓库的 leader election 只碰
+   `tahrs-system/tahrs-scheduler`，所以生成器把这条剔除，改由 `role-lease.yaml` 授予：
+   `create` 不加 `resourceNames`（首次竞选要能创建），`get/update` 限定到这一条 Lease。
 2. **角色改名** `tahrs-scheduler-role`，避免和集群里已有的默认角色重名。
 3. **`extension-apiserver-authentication` 读取放在 kube-system 的 Role 里**，不进 ClusterRole：
    ClusterRoleBinding 会让 ConfigMap 读权限覆盖所有命名空间，比 api-server 的接口约定宽。
+   动词是 `get/list/watch`：上游用 filtered informer 监听这个 ConfigMap
+   （`apiserver/pkg/server/dynamiccertificates/configmap_cafile_content.go`），只给 `get`
+   会让 informer 永远同步不上，客户端证书认证被静默关掉；RBAC 无法用 `resourceNames`
+   限制 `list/watch`，所以它在 kube-system 内是命名空间级权限。
 
 `resource.k8s.io` 的 resourceslices/deviceclasses/resourceclaims、`storage.k8s.io` 的
 csistoragecapacities/volumeattachments、`namespaces` 都来自上游规则（DRA 在 v1.36 默认开启，
-所以生成结果里包含这些规则，共 29 条）。
+所以生成结果里包含这些规则，共 27 条）。
 
 ## 镜像
 
@@ -83,21 +89,30 @@ kubectl apply -k deploy/base
 ## 单副本与健康信号
 
 - `replicas: 1`，Lease `tahrs-system/tahrs-scheduler`。
-- **故意不配探针**：kube-scheduler 的 secure 端点走认证，没有可匿名探活的路径，
-  探针只会误杀健康进程。健康信号是副本数、Lease 持有者、以及启动时打印的配置指纹。
+- 配了 `startupProbe`/`livenessProbe`/`readinessProbe`，分别打 secure 端口的
+  `/healthz`、`/livez`、`/readyz`。这三个路径由默认的 `system:public-info-viewer`
+  ClusterRole 对未认证用户放行，kubelet 的无凭据 HTTPS GET 能通过，形状与 kubeadm
+  静态 Pod 一致；distroless 镜像里没有 shell 和 curl，exec 探针不可用。
+  **这三个探针没有在集群内实测过**（导入镜像需要 root）：部署后先确认 Pod 不变
+  CrashLoopBackOff。真正的健康信号仍是副本数、Lease 持有者和启动打印的配置指纹。
 - 调度器 Pod 自身由集群默认调度器调度（没有设置 `schedulerName`），避免自调度死锁。
 - 配置改动需要 `kubectl rollout restart deployment/tahrs-scheduler`，没有热加载（§4.4）。
 
 ## 节点池隔离约定（写进 docs）
 
-GPU 池节点：
+pool label 打在**所有由 tahrs 管理的节点**上（一个异构池，可以同时含 CPU 节点和 GPU 节点）：
 
-- label `scheduling.example.com/pool=heterogeneous`
-- 污点 `scheduling.example.com/dedicated=tahrs:NoSchedule`
+- label `scheduling.example.com/pool=heterogeneous`（池内全部节点）
+- 污点 `scheduling.example.com/dedicated=tahrs:NoSchedule`（只有 GPU 节点）
 
-工作负载必须显式容忍该污点并声明 nodeAffinity 才会落到 GPU 池（见 `common/examples/gpu-demo.yaml`）。
-这条约定解决 §7 的双调度器重复承诺问题：default scheduler 不会把不带容忍的普通 Pod 放到 GPU 池，
-tahrs 也不会去抢别的池。
+隔离由两侧各自强制，不依赖工作负载作者自觉：
+
+- 调度器侧：`configmap.yaml` 里的 `NodeAffinity` 插件配置了 `addedAffinity`，要求
+  `pool=heterogeneous`。工作负载即使忘了写 nodeAffinity，tahrs 也不会把它放到池外节点。
+- 集群侧：GPU 节点的污点让 default scheduler 不会把普通 Pod 放上去；工作负载要落到 GPU 池
+  仍需自己声明容忍与 nodeAffinity（见 `common/examples/gpu-demo.yaml`）。
+
+这条约定解决 §7 的双调度器重复承诺问题。
 
 ## 本机验证记录（2026-10-28）
 

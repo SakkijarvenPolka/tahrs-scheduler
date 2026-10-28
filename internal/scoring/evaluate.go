@@ -42,17 +42,21 @@ func Evaluate(q model.TaskRequests, snap model.NodeSnapshot, p model.ProfileView
 		pack = Neutral
 	}
 
+	combined := clamp01(p.Alpha*fit + p.Beta*pack)
+
+	// Fit, Pack and the combined value are all checked: a NaN coefficient makes
+	// every comparison false, so it would otherwise survive the clamp and turn
+	// into MinInt64 when converted to an integer.
 	for _, v := range []struct {
 		name  string
 		value float64
-	}{{"fit", fit}, {"pack", pack}} {
+	}{{"fit", fit}, {"pack", pack}, {"combined", combined}} {
 		if math.IsNaN(v.value) || math.IsInf(v.value, 0) {
 			return model.Breakdown{}, fmt.Errorf("%w: %s=%v (profile %q, node %q)",
 				model.ErrInvalidNumeric, v.name, v.value, p.Name, snap.Name)
 		}
 	}
 
-	combined := clamp01(p.Alpha*fit + p.Beta*pack)
 	prePenalty := int64(math.Round(MaxScore * combined))
 	penalty, applied := GPUPenalty(q, snap, p)
 	if !applied {

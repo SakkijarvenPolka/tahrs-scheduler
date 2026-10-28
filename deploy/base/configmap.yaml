@@ -43,6 +43,23 @@ data:
       - name: tahrs
         args:
           configPath: /etc/tahrs/tahrs-config.yaml
+      # Pool isolation is enforced here, not delegated to workload authors:
+      # NodeAffinity's addedAffinity is merged into every pod this profile
+      # schedules, so a pod that forgets its own nodeAffinity still cannot be
+      # placed outside the heterogeneous pool (plan §7). The label marks every
+      # node tahrs manages; GPU nodes additionally carry the taint that keeps
+      # non-tahrs pods away (see deploy/README.md).
+      - name: NodeAffinity
+        args:
+          apiVersion: kubescheduler.config.k8s.io/v1
+          kind: NodeAffinityArgs
+          addedAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: scheduling.example.com/pool
+                  operator: In
+                  values: ["heterogeneous"]
   tahrs-config.yaml: |
     configVersion: "2026-10-tahrs1"
     gpuResourceName: nvidia.com/gpu

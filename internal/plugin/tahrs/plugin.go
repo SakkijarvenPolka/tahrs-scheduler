@@ -55,6 +55,8 @@ func (a *Args) DeepCopy() *Args {
 }
 
 // Plugin implements fwk.PreFilterPlugin, fwk.PreScorePlugin and fwk.ScorePlugin.
+// It also implements fwk.EnqueueExtensions so Pods rejected for an unknown
+// profile are only retried when that profile annotation changes.
 type Plugin struct {
 	handle  fwk.Handle
 	setting *config.Setting
@@ -64,10 +66,11 @@ type Plugin struct {
 }
 
 var (
-	_ fwk.PreFilterPlugin = &Plugin{}
-	_ fwk.PreScorePlugin  = &Plugin{}
-	_ fwk.ScorePlugin     = &Plugin{}
-	_ fwk.ScoreExtensions = &Plugin{}
+	_ fwk.PreFilterPlugin   = &Plugin{}
+	_ fwk.PreScorePlugin    = &Plugin{}
+	_ fwk.ScorePlugin       = &Plugin{}
+	_ fwk.ScoreExtensions   = &Plugin{}
+	_ fwk.EnqueueExtensions = &Plugin{}
 )
 
 // New is the PluginFactory registered by cmd/tahrs-scheduler. It reads and

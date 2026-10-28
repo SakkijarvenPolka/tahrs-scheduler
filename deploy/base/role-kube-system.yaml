@@ -1,7 +1,13 @@
 # The scheduler serves a secure endpoint with delegated authentication, so it must
 # read the api-server's client CA bundle from
-# kube-system/extension-apiserver-authentication (component-base's delegated
-# authenticator reads that ConfigMap on startup).
+# kube-system/extension-apiserver-authentication.
+#
+# list/watch are required, not just get: k8s.io/apiserver's
+# NewDynamicCAFromConfigMapController (pkg/server/dynamiccertificates/
+# configmap_cafile_content.go) watches the ConfigMap through a filtered informer.
+# RBAC cannot scope list/watch by fieldSelector or resourceNames, so the verbs are
+# namespace-wide in kube-system; the alternative (get only) leaves the informer
+# permanently unsynced, which silently disables client-certificate authentication.
 #
 # This is a namespaced Role on purpose: putting ConfigMap reads in the ClusterRole
 # would grant them in every namespace, which is broader than the api-server
@@ -16,8 +22,7 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["configmaps"]
-  resourceNames: ["extension-apiserver-authentication"]
-  verbs: ["get"]
+  verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
