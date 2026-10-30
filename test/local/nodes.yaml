@@ -8,6 +8,12 @@
 # also sets NodeAffinity.addedAffinity, a pod that forgets nodeAffinity still
 # cannot land outside this pool -- run.sh checks that the real node in the
 # cluster (which has no pool label) is never picked.
+#
+# Capacities cycle through three sizes so fit and pack have something to
+# choose between. Regenerate with the generator noted in README.md.
+#
+# Four-node baseline: two CPUs, two GPUs.
+---
 apiVersion: v1
 kind: Node
 metadata:
@@ -17,20 +23,22 @@ metadata:
     kubernetes.io/os: linux
     kubernetes.io/arch: amd64
     type: kwok
-    tahrs.dev/local-test: "true"
+    tahrs.dev/local-test: 'true'
     scheduling.example.com/pool: heterogeneous
     scheduling.example.com/class: cpu
   annotations:
     kwok.x-k8s.io/node: fake
 status:
   capacity:
-    cpu: "32"
+    cpu: '32'
     memory: 128Gi
-    pods: "110"
+    pods: '110'
   allocatable:
-    cpu: "32"
+    cpu: '32'
     memory: 128Gi
-    pods: "110"
+    pods: '110'
+spec: {}
+
 ---
 apiVersion: v1
 kind: Node
@@ -41,20 +49,22 @@ metadata:
     kubernetes.io/os: linux
     kubernetes.io/arch: amd64
     type: kwok
-    tahrs.dev/local-test: "true"
+    tahrs.dev/local-test: 'true'
     scheduling.example.com/pool: heterogeneous
     scheduling.example.com/class: cpu
   annotations:
     kwok.x-k8s.io/node: fake
 status:
   capacity:
-    cpu: "8"
+    cpu: '8'
     memory: 32Gi
-    pods: "110"
+    pods: '110'
   allocatable:
-    cpu: "8"
+    cpu: '8'
     memory: 32Gi
-    pods: "110"
+    pods: '110'
+spec: {}
+
 ---
 apiVersion: v1
 kind: Node
@@ -65,27 +75,28 @@ metadata:
     kubernetes.io/os: linux
     kubernetes.io/arch: amd64
     type: kwok
-    tahrs.dev/local-test: "true"
+    tahrs.dev/local-test: 'true'
     scheduling.example.com/pool: heterogeneous
     scheduling.example.com/class: gpu
   annotations:
     kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
 spec:
   taints:
   - key: scheduling.example.com/dedicated
     value: tahrs
     effect: NoSchedule
-status:
-  capacity:
-    cpu: "32"
-    memory: 128Gi
-    pods: "110"
-    nvidia.com/gpu: "4"
-  allocatable:
-    cpu: "32"
-    memory: 128Gi
-    pods: "110"
-    nvidia.com/gpu: "4"
+
 ---
 apiVersion: v1
 kind: Node
@@ -96,24 +107,24 @@ metadata:
     kubernetes.io/os: linux
     kubernetes.io/arch: amd64
     type: kwok
-    tahrs.dev/local-test: "true"
+    tahrs.dev/local-test: 'true'
     scheduling.example.com/pool: heterogeneous
     scheduling.example.com/class: gpu
   annotations:
     kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
 spec:
   taints:
   - key: scheduling.example.com/dedicated
     value: tahrs
     effect: NoSchedule
-status:
-  capacity:
-    cpu: "64"
-    memory: 256Gi
-    pods: "110"
-    nvidia.com/gpu: "8"
-  allocatable:
-    cpu: "64"
-    memory: 256Gi
-    pods: "110"
-    nvidia.com/gpu: "8"

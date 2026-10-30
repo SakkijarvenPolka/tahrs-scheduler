@@ -202,9 +202,10 @@ make replace-sync     # 依赖 /home/qiai/go/pkg/mod 里的 k8s.io/kubernetes@v0
   账本口径由 `internal/kubeadapter/draledger_test.go` 的三条断言锁住。
 - **伪 GPU 不等价于真实分配**：测试用 `nvidia.com/gpu` 这个扩展资源名模拟，真实集群里 MIG、时间片共享、`nvidia.com/mig-*`
   都不是这个模型能表达的。
-- **伪节点的观察在 `test/local` 里**：`./test/local/run.sh` 用 KWOK 伪造 4 个节点（2 个 CPU、2 个 GPU），
-  跑真实 API server + 真实调度器二进制，断言三个 Pod 的落点与 PreFilter 拒绝文案。它证明的是「过滤和落点符合
-  画像配置」，不是装箱率提升，所以文档里没有任何「提升 X%」的数字；§14 的措辞红线也是同一个原因。
+- **伪节点的观察在 `test/local` 里**：`./test/local/run.sh` 用 KWOK 伪造 4 个节点（2 个 CPU、2 个 GPU；
+  `NODEFILE=test/local/nodes-200.yaml` 可放大到 200 个），跑真实 API server + 真实调度器二进制，断言三个
+  Pod 的落点与 PreFilter 拒绝文案。它证明的是「过滤和落点符合画像配置」，不是装箱率提升，所以文档里没有任何
+  「提升 X%」的数字；§14 的措辞红线也是同一个原因。
 - **镜像体积**：解压后 106.35 MB（二进制 103.27 MB + 基础层 2.61 MB），压缩层合计 48.57 MB；
   用仓库 Dockerfile 的 `-s -w` 构建时二进制为 71.5 MB（镜像未实测）。
 - **集群内单副本冒烟未完成**：k3s 的 containerd socket 只有 root 可读，导入镜像这一步需要人工 sudo，

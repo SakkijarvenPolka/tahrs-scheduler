@@ -38,6 +38,9 @@ make local-test                # 同上，走 Makefile 目标
 | `KWOK_PORT` | `10247` | KWOK 的模拟 kubelet 端口 |
 | `SCHED_PORT` | `10279` | 调度器 secure 端口（只为了不撞 10259） |
 | `KWOK` | 自动探测 | `kwok` 二进制路径 |
+| `NODEFILE` | `test/local/nodes.yaml` | 伪节点清单；规模场景指向 `nodes-200.yaml` |
+| `PODS` | `0` | 大于 0 时追加一批 `tahrs-batch-*` Pod，并统计落点与耗时 |
+| `REAL_NODE` | `0` | 设为 `1` 时把真实节点临时打上 pool 标签，退出时还原 |
 | `KEEP` | `0` | 设为 `1` 时保留现场 |
 | `CACHE` | `~/.cache/tahrs-local` | KWOK 二进制与清单缓存目录 |
 
@@ -57,8 +60,17 @@ make local-test                # 同上，走 Makefile 目标
 | `tahrs-fake-gpu-1` | 32 / 128Gi | 4 | `dedicated=tahrs:NoSchedule` |
 | `tahrs-fake-gpu-2` | 64 / 256Gi | 8 | `dedicated=tahrs:NoSchedule` |
 
-集群里真正的那个节点（本机 k3s 的节点）**故意不打 pool 标签**，所以它也是
-`addedAffinity` 的反例：任何 Pod 都不该落上去。
+`nodes-200.yaml` 是同一模板放大到 200 个节点（134 CPU + 66 GPU）的规模夹具，容量在三种
+规格里循环，用来观察打分在节点数上去之后的行为：
+
+```bash
+NODEFILE=$PWD/test/local/nodes-200.yaml PODS=300 ./test/local/run.sh
+```
+
+集群里真正的那个节点（本机 k3s 的节点）**默认不打 pool 标签**，所以它也是
+`addedAffinity` 的反例：任何 Pod 都不该落上去。加 `REAL_NODE=1` 时脚本会临时给它打上
+`scheduling.example.com/pool=heterogeneous`（退出时删除），于是它和伪节点一样是合法落点——
+本机因此可以混进池子。注意它上面是真 kubelet，落上去的 Pod 会真的去拉镜像。
 
 ## 断言
 
@@ -70,12 +82,15 @@ make local-test                # 同上，走 Makefile 目标
 | `tahrs-gpu` | 落到 `tahrs-fake-gpu-*` | `gpu-inference-v1` 画像 + GPU 计分 + 容忍污点 |
 | `tahrs-bad-profile` | 一直 Pending，事件含 `unknown profile` | PreFilter 拒绝未知画像 |
 
-最后一节会打印调度器 `-v=6` 的 `Scored node` 片段，可以直观看到各节点分数差。
+`PODS=300` 时还会追加 300 个 `tahrs-batch-*` Pod（1C/2Gi），统计「apply 到全部拿到
+`nodeName`」的耗时、每 Pod 平均耗时和落点前 10 的节点。一次实测（200 节点、300 Pod、
+k3s v1.36.5、本机）：4.7 s 全部调度完成，约 15 ms/Pod；落点集中在小 CPU 节点（8C/32Gi
+每台 8 个），符合 fit/pack 同向的装箱行为。这是行为观察，不是性能基准。
 
 ## 加一个场景
 
-改 `nodes.yaml` 加节点、改 `workloads.yaml` 加 Pod，然后在 `run.sh` 的断言段
-加一条 `case "$node" in ...` 即可。KWOK 节点除了 `capacity/allocatable` 也能带
+改 `nodes.yaml` 加节点（或复制一份新夹具、用 `NODEFILE` 指向它）、改 `workloads.yaml`
+加 Pod，然后在 `run.sh` 的断言段加一条 `case "$node" in ...` 即可。KWOK 节点除了 `capacity/allocatable` 也能带
 `status.conditions`、`spec.taints`、任意 label，适合构造「同构但容量不同」或
 「GPU 型号不同」的对比。
 

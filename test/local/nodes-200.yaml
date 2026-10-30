@@ -1,0 +1,5612 @@
+# Fake nodes for test/local/run.sh, created and kept alive by KWOK
+# (https://kwok.sigs.k8s.io). Only the kubelet is simulated: the API server,
+# the scheduling framework and the tahrs binary are the real ones.
+#
+# Labels mirror deploy/README.md's pool contract: every managed node carries
+# scheduling.example.com/pool=heterogeneous and GPU nodes add the dedicated
+# taint that keeps non-tahrs workloads away. Because the tahrs profile config
+# also sets NodeAffinity.addedAffinity, a pod that forgets nodeAffinity still
+# cannot land outside this pool -- run.sh checks that the real node in the
+# cluster (which has no pool label) is never picked.
+#
+# Capacities cycle through three sizes so fit and pack have something to
+# choose between. Regenerate with the generator noted in README.md.
+#
+# Scale fixture: 134 CPU nodes and 66 GPU nodes, 200 in total.
+#
+#   NODEFILE=$PWD/test/local/nodes-200.yaml PODS=300 ./test/local/run.sh
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-1
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-1
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-2
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-2
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-3
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-3
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-4
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-4
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-5
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-5
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-6
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-6
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-7
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-7
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-8
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-8
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-9
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-9
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-10
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-10
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-11
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-11
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-12
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-12
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-13
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-13
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-14
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-14
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-15
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-15
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-16
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-16
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-17
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-17
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-18
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-18
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-19
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-19
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-20
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-20
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-21
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-21
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-22
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-22
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-23
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-23
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-24
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-24
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-25
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-25
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-26
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-26
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-27
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-27
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-28
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-28
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-29
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-29
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-30
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-30
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-31
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-31
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-32
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-32
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-33
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-33
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-34
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-34
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-35
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-35
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-36
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-36
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-37
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-37
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-38
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-38
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-39
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-39
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-40
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-40
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-41
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-41
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-42
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-42
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-43
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-43
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-44
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-44
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-45
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-45
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-46
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-46
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-47
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-47
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-48
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-48
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-49
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-49
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-50
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-50
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-51
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-51
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-52
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-52
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-53
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-53
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-54
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-54
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-55
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-55
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-56
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-56
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-57
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-57
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-58
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-58
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-59
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-59
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-60
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-60
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-61
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-61
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-62
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-62
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-63
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-63
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-64
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-64
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-65
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-65
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-66
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-66
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-67
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-67
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-68
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-68
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-69
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-69
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-70
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-70
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-71
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-71
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-72
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-72
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-73
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-73
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-74
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-74
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-75
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-75
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-76
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-76
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-77
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-77
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-78
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-78
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-79
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-79
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-80
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-80
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-81
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-81
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-82
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-82
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-83
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-83
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-84
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-84
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-85
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-85
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-86
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-86
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-87
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-87
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-88
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-88
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-89
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-89
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-90
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-90
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-91
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-91
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-92
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-92
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-93
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-93
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-94
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-94
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-95
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-95
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-96
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-96
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-97
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-97
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-98
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-98
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-99
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-99
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-100
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-100
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-101
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-101
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-102
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-102
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-103
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-103
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-104
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-104
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-105
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-105
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-106
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-106
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-107
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-107
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-108
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-108
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-109
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-109
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-110
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-110
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-111
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-111
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-112
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-112
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-113
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-113
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-114
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-114
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-115
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-115
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-116
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-116
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-117
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-117
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-118
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-118
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-119
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-119
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-120
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-120
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-121
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-121
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-122
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-122
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-123
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-123
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-124
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-124
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-125
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-125
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-126
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-126
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-127
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-127
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-128
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-128
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-129
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-129
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-130
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-130
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-131
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-131
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-132
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-132
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-133
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-133
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-134
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-134
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+  allocatable:
+    cpu: '8'
+    memory: 32Gi
+    pods: '110'
+spec: {}
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-1
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-1
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-2
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-2
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-3
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-3
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-4
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-4
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-5
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-5
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-6
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-6
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-7
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-7
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-8
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-8
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-9
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-9
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-10
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-10
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-11
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-11
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-12
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-12
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-13
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-13
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-14
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-14
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-15
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-15
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-16
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-16
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-17
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-17
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-18
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-18
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-19
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-19
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-20
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-20
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-21
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-21
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-22
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-22
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-23
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-23
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-24
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-24
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-25
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-25
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-26
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-26
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-27
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-27
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-28
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-28
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-29
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-29
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-30
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-30
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-31
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-31
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-32
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-32
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-33
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-33
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-34
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-34
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-35
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-35
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-36
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-36
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-37
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-37
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-38
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-38
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-39
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-39
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-40
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-40
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-41
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-41
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-42
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-42
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-43
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-43
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-44
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-44
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-45
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-45
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-46
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-46
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-47
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-47
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-48
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-48
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-49
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-49
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-50
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-50
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-51
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-51
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-52
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-52
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-53
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-53
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-54
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-54
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-55
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-55
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-56
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-56
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-57
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-57
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-58
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-58
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-59
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-59
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-60
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-60
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-61
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-61
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-62
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-62
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-63
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-63
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-64
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-64
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+  allocatable:
+    cpu: '32'
+    memory: 128Gi
+    pods: '110'
+    nvidia.com/gpu: '4'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-65
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-65
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+  allocatable:
+    cpu: '64'
+    memory: 256Gi
+    pods: '110'
+    nvidia.com/gpu: '8'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-66
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-66
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: 'true'
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+  allocatable:
+    cpu: '16'
+    memory: 64Gi
+    pods: '110'
+    nvidia.com/gpu: '2'
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
