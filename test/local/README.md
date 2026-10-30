@@ -87,6 +87,42 @@ NODEFILE=$PWD/test/local/nodes-200.yaml PODS=300 ./test/local/run.sh
 k3s v1.36.5、本机）：4.7 s 全部调度完成，约 15 ms/Pod；落点集中在小 CPU 节点（8C/32Gi
 每台 8 个），符合 fit/pack 同向的装箱行为。这是行为观察，不是性能基准。
 
+## 与原生调度器对比
+
+`compare.sh` 用同一批伪节点、同一份 Pod 模板跑两轮：第一轮把 tahrs 二进制作为第二调度器
+启动，第二轮把 Pod 交给集群内置的 kube-scheduler，然后比较落点分布。两轮之间 Pod 会被清空，
+节点从零开始记账，所以两轮的起点相同：
+
+```bash
+./test/local/compare.sh                    # 300 Pod，允许进 GPU 节点
+TOLERATE_GPU=0 ./test/local/compare.sh     # 两轮都不许进 GPU 节点
+PODS=600 ./test/local/compare.sh           # 超过单个小节点类别的容量
+```
+
+一次实测（200 节点、300 Pod、k3s v1.36.5、本机）：
+
+| 指标 | tahrs | 原生 |
+| --- | --- | --- |
+| 绑定 300 Pod 耗时 | 4810 ms | 4881 ms |
+| 用到的节点 | 24 / 200 | 149 / 200 |
+| 每节点 Pod（均值 / 最大） | 12.5 / 32 | 2.0 / 5 |
+| 落在 GPU 节点的 Pod | 0 | 169 |
+| CPU 利用率变异系数 | 2.71 | 0.60 |
+
+去掉污点容忍（`TOLERATE_GPU=0`，两轮都只能进 CPU 节点）后结论不变：tahrs 用 21 个节点、
+每节点 14.3 个、最大 32；原生用 89 个节点、每节点 3.4 个、最大 5。原生偏好大节点
+（`cpu-32c` 拿到 217 个），tahrs 先塞满小节点（`cpu-8c` 72、`cpu-16c` 144、`cpu-32c` 84）。
+
+差异来自打分方向：tahrs 的 fit 与 pack 同向，都把 Pod 往已经装得多的节点上推，所以是装箱；
+原生 `LeastAllocated` 把 Pod 往空闲比例高的节点上推，所以是打散。`gpuAvoidPenalty` 在 Pod
+带污点容忍时仍然把普通 Pod 挡在 GPU 节点外，原生没有这层语义（169 个 Pod 直接进了 GPU 节点）。
+两者耗时接近；这组数字只说明分布差异，不是性能基准。
+
+同参数重复运行时，整体形状稳定（tahrs 24 个节点、每节点 12.5 个、GPU 节点 0 个；
+原生 152 个节点、每节点 2.0 个、GPU 节点 173 个），但具体落到哪一台会变，因为 300 个
+Pod 是并发到达的，调度器按到达顺序逐个决策；`busiest node` 的两次数值因此是 28 和 32
+（后者是一个 32C 节点被填满）。
+
 ## 加一个场景
 
 改 `nodes.yaml` 加节点（或复制一份新夹具、用 `NODEFILE` 指向它）、改 `workloads.yaml`
