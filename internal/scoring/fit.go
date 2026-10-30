@@ -25,10 +25,9 @@ const Neutral = 0.5
 // Dimensions with a zero request or a zero weight are skipped. When nothing is
 // left to evaluate, Neutral is returned and used=false.
 //
-// Honest note for the documentation: the maximum is reached when the free
-// capacity equals the request, so the component is best-fit oriented and its
-// ordering is largely aligned with Pack (see F12 in the plan and
-// docs/architecture.md). It replaced a cosine similarity because it reacts to
+// Honest note: the maximum is reached when the free capacity equals the
+// request, so the component is best-fit oriented and its ordering is largely
+// aligned with Pack (F12). It replaced a cosine similarity because it reacts to
 // the magnitude of the residual capacity, not because it provides an
 // orthogonal signal.
 func Fit(q model.TaskRequests, snap model.NodeSnapshot, w model.Weights) (value float64, used bool) {

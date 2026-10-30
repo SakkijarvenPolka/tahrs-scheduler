@@ -4,6 +4,30 @@
 把不同业务的放置偏好写进配置里的画像（profile），Pod 用一行注解选择画像；每一次决策都能离线用
 `tahrsctl replay` 逐节点解释，不需要集群。
 
+## 打分算法
+
+每个候选节点最终得到 0–100 分，由 fit、pack 与 GPU 罚分合成：
+
+```
+t_k      = q_k / s_k                     请求占节点可分配量的比例
+f_k      = (s_k − U_k) / s_k             放入前的剩余比例
+u′_k     = (U_k + q_k) / A_k             放入后的占用率
+
+fit      = 1 − Σ w_k |f_k − t_k| / Σ w_k (f_k + t_k)
+pack     = 1 − sqrt( Σ v_k (1 − u′_k)² / Σ v_k )
+combined = clamp01(α·fit + β·pack)
+score    = clamp(round(100 × combined) − gpuPenalty, 0, 100)
+```
+
+- 维度 `k` 取 `cpu`、`memory`、`gpu`；`q` 是 Pod 请求，`U` 是节点已用，`s` 是可分配量，`A` 是该维度容量。
+- `w_k`、`v_k` 来自画像的 `fitWeights` / `packWeights`，`α`、`β` 是画像里的配比。
+- `fit` 是形状匹配：节点剩余越接近 Pod 请求，分越高；某个维度权重为 0、或分子分母同时为 0 时跳过。
+- `pack` 是紧凑度：放进去之后节点越满，分越高；`packMode: spread` 时整项取反（`1 − pack`）。
+- `gpuPenalty` 只在画像声明 `avoid`、Pod 没有请求 GPU 而节点有 GPU 时生效。
+- 所有维度都无法计算时，该分量取中性值 0.5；节点账本自相矛盾（请求 GPU 但节点可分配为 0）时，
+  这个节点记 0 分并注明原因，不影响其它候选节点。
+- 回放结果同分按节点名排序，保证同一输入得到同一张表。
+
 ## 它解决什么问题
 
 默认调度器的打分只有「越空越好」：`LeastAllocated` 把负载摊平，既无法表达「这类负载应该装箱」，
@@ -25,13 +49,13 @@ make test      # 全量单测（带 -race）
 
 ### 离线解释一次决策
 
-`docs/examples/` 里有一份最小输入（配置、工作负载、节点快照），不需要集群：
+`examples/` 里有一份最小输入（配置、工作负载、节点快照），不需要集群：
 
 ```bash
 ./bin/tahrsctl replay \
-  --config docs/examples/tahrs-config.yaml \
-  --pod    docs/examples/workload.yaml \
-  --nodes  docs/examples/cluster.yaml
+  --config examples/tahrs-config.yaml \
+  --pod    examples/workload.yaml \
+  --nodes  examples/cluster.yaml
 ```
 
 ```
@@ -79,17 +103,6 @@ kubectl describe pod llama-7b-0 | sed -n '/Events/,$p'
 kubectl get events --sort-by=.lastTimestamp | grep -i tahrs
 ```
 
-### 本地伪节点试跑（不需要真集群）
-
-```bash
-make local-test                                  # KWOK 造 4 个伪节点，跑三条落点断言
-./test/local/compare.sh                          # 同一夹具对比 tahrs 与原生调度器
-NODEFILE=$PWD/test/local/nodes-200.yaml PODS=300 ./test/local/compare.sh   # 200 节点规模
-```
-
-KWOK 只模拟 kubelet：API Server、调度框架和 tahrs 二进制都是真的，容器不会真跑。脚本结束时
-删除伪节点与测试命名空间，不会影响集群里已有的负载。
-
 ## 配置
 
 ```yaml
@@ -128,7 +141,7 @@ profiles:
 2. **资源**：`requests` 决定请求向量；GPU 取 `max(requests, limits)`，与上游账本一致。
 3. **硬约束**：`nodeSelector`、`nodeAffinity`、容忍、拓扑分布等原生字段照常生效。
 
-画像_name_是任务与调度策略之间唯一的耦合点：任务只能选择画像，不能覆盖画像里的权重。
+画像是任务与调度策略之间唯一的耦合点：任务只能选择画像，不能覆盖画像里的权重。
 
 ## 已实现的功能
 
@@ -160,19 +173,3 @@ profiles:
   串行到达、重复运行与确定性检查。
 - 测试：评分 golden 用例、配置校验、账本适配、插件生命周期、框架级验收（镜像上游调度流程）、
   本地端到端。
-
-## 文档
-
-- [docs/architecture.md](docs/architecture.md)：设计与取舍——为什么只做打分、为什么禁用两个原生打分
-  插件、F11/F12/F13 的实现、DRA 边界。
-- [deploy/README.md](deploy/README.md)：部署清单、RBAC 三处偏离说明、镜像构建、节点池隔离约定。
-- [deploy/dra/README.md](deploy/dra/README.md)：DRA 验证套件的安装、验证与回滚。
-- [test/local/README.md](test/local/README.md)：本地伪节点测试、三方对照方法与实测结果。
-
-## 边界
-
-- 只做放置打分，不做硬过滤，也不替代 `NodeResourcesFit`；Filter 段保持默认插件集。
-- GPU 按整卡计数，不读设备属性（型号、显存、MIG）。需要「一张 40G 卡」这类语义时应使用 DRA；
-  插件对 DRA 分配只提供账本盲区可见性，不参与设备选择。
-- 配置启动加载、无热更新；调度器本身无状态，单副本即可，多副本由 leader election 选主。
-- 与 kube-scheduler v1.36 的框架 API 对齐；评分库不依赖 k8s，可独立复用与单测。

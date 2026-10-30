@@ -12,3 +12,6 @@ coverage.*
 # Local sandbox material: kubeconfigs, rendered manifests and replay input.
 /local/
 *.log
+
+# Documentation is kept outside the repository.
+/docs/
