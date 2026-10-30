@@ -1,18 +1,27 @@
 #!/usr/bin/env bash
 #
-# Compare the tahrs score plugin with the cluster's built-in scheduler on the
-# same fake-node fixture.
+# Compare scoring directions on the same fake-node fixture.
 #
-# Both phases run against exactly the same nodes, the same pod spec and the same
-# baseline empty cluster; only the scheduler that binds the pods differs. Phase
-# one starts the tahrs binary as a second scheduler; phase two leaves the pods
-# to the built-in scheduler that ships with the cluster.
+# Every arm runs against exactly the same nodes, pod spec, arrival pattern and
+# empty cluster. Only the scheduler differs:
+#
+#   tahrs   the tahrs binary with the shipped configuration:
+#             score = alpha*fit + beta*pack
+#   spread  the same binary, same profile name and same weights, but the profile
+#             carries `packMode: spread`, so the second term is 1-pack:
+#             score = alpha*fit + beta*(1-pack)
+#   native  the built-in scheduler of the cluster (not a control arm: its plugin
+#             set differs, it is only an external reference point)
 #
 #   ./test/local/compare.sh
 #   NODEFILE=$PWD/test/local/nodes-200.yaml PODS=300 ./test/local/compare.sh
-#   TOLERATE_GPU=0 ./test/local/compare.sh    keep both schedulers off GPU nodes
-#   PODS=600 ./test/local/compare.sh          more pods than one small class holds
+#   ARMS="tahrs spread" SERIAL=1 RUNS=2 ./test/local/compare.sh
+#   TOLERATE_GPU=0 ./test/local/compare.sh    keep pods off GPU nodes entirely
 #   KEEP=1 ./test/local/compare.sh            leave nodes and placements in place
+#
+# SERIAL=1 applies one pod, waits for its binding, then applies the next one, so
+# the input sequence is deterministic. RUNS=2 repeats every arm and reports
+# whether the placement map is identical; that is the determinism check.
 #
 set -euo pipefail
 
@@ -24,6 +33,9 @@ KWOK_PORT=${KWOK_PORT:-10347}
 SCHED_PORT=${SCHED_PORT:-10391}
 NODEFILE=${NODEFILE:-$HERE/nodes-200.yaml}
 PODS=${PODS:-300}
+ARMS=${ARMS:-"tahrs spread native"}
+SERIAL=${SERIAL:-0}
+RUNS=${RUNS:-1}
 TOLERATE_GPU=${TOLERATE_GPU:-1}
 NATIVE_SCHEDULER=${NATIVE_SCHEDULER:-default-scheduler}
 KEEP=${KEEP:-0}
@@ -38,6 +50,7 @@ need() { command -v "$1" >/dev/null 2>&1 || die "missing '$1'"; }
 cleanup() {
   local code=$?
   if [[ -n ${SCHED_PID:-} ]]; then kill "$SCHED_PID" 2>/dev/null || true; fi
+  if [[ -n ${SAMPLER_PID:-} ]]; then kill "$SAMPLER_PID" 2>/dev/null || true; fi
   if [[ ${STARTED_KWOK:-0} == 1 && -n ${KWOK_PID:-} ]]; then kill "$KWOK_PID" 2>/dev/null || true; fi
   if [[ $KEEP == 1 ]]; then
     printf '\nfake nodes, namespace %s and placements kept; logs under %s\n' "$NAMESPACE" "$WORK"
@@ -133,6 +146,7 @@ kubectl get nodes -l tahrs.dev/local-test=true -o json >"$WORK/nodes.json"
 log "build and configuration"
 (cd "$ROOT" && go build -trimpath -o "$WORK/tahrs-scheduler" ./cmd/tahrs-scheduler)
 python3 - "$ROOT/deploy/base/configmap.yaml" "$WORK" <<'PY'
+import copy
 import pathlib
 import sys
 
@@ -140,19 +154,32 @@ import yaml
 
 src, work = sys.argv[1], sys.argv[2]
 data = yaml.safe_load(open(src))["data"]
-base = yaml.safe_load(data["kube-scheduler-config.yaml"])
-base["clientConnection"] = {"kubeconfig": f"{work}/kubeconfig"}
-for profile in base["profiles"]:
-    for plugin in profile.get("pluginConfig", []):
-        if plugin["name"] == "tahrs":
-            plugin["args"]["configPath"] = f"{work}/tahrs-config.yaml"
-pathlib.Path(f"{work}/tahrs-config.yaml").write_text(data["tahrs-config.yaml"])
-pathlib.Path(f"{work}/kube-scheduler-config.yaml").write_text(yaml.safe_dump(base, sort_keys=False))
+scheduler = yaml.safe_load(data["kube-scheduler-config.yaml"])
+setting = yaml.safe_load(data["tahrs-config.yaml"])
+scheduler["clientConnection"] = {"kubeconfig": f"{work}/kubeconfig"}
+
+
+def write_pair(setting_obj, name):
+    for profile in scheduler["profiles"]:
+        for plugin in profile.get("pluginConfig", []):
+            if plugin["name"] == "tahrs":
+                plugin["args"]["configPath"] = f"{work}/{name}.yaml"
+    pathlib.Path(f"{work}/{name}.yaml").write_text(yaml.safe_dump(setting_obj, sort_keys=False))
+    pathlib.Path(f"{work}/kube-scheduler-{name}.yaml").write_text(
+        yaml.safe_dump(scheduler, sort_keys=False))
+
+
+write_pair(setting, "tahrs-config")
+
+spread = copy.deepcopy(setting)
+default = spread["defaultProfile"]
+spread["profiles"][default]["packMode"] = "spread"
+write_pair(spread, "spread-config")
 PY
 
 render_pods() {
-  local scheduler=$1
-  python3 - "$PODS" "$scheduler" "$TOLERATE_GPU" >"$WORK/pods-$scheduler.yaml" <<'PY'
+  local scheduler=$1 out=$2
+  python3 - "$PODS" "$scheduler" "$TOLERATE_GPU" >"$out" <<'PY'
 import sys
 
 import yaml
@@ -187,64 +214,213 @@ for index in range(count):
 sys.stdout.write("---\n".join(yaml.safe_dump(doc, sort_keys=False) for doc in docs))
 PY
 }
-render_pods tahrs-scheduler
-render_pods "$NATIVE_SCHEDULER"
 
-# One phase: fresh namespace, apply every pod, wait until each has a node, dump
-# the placement, then clear the pods again so the next phase starts from the
-# same empty cluster.
+render_pods "$NATIVE_SCHEDULER" "$WORK/pods-native.yaml"
+render_pods tahrs-scheduler "$WORK/pods-tahrs.yaml"
+cp "$WORK/pods-tahrs.yaml" "$WORK/pods-spread.yaml"
+
+arm_scheduler() {
+  case $1 in
+    tahrs|spread) printf 'tahrs-scheduler' ;;
+    native) printf '%s' "$NATIVE_SCHEDULER" ;;
+    *) die "unknown arm '$1' (want tahrs, spread or native)" ;;
+  esac
+}
+
+arm_config() {
+  case $1 in
+    tahrs) printf '%s/kube-scheduler-tahrs-config.yaml' "$WORK" ;;
+    spread) printf '%s/kube-scheduler-spread-config.yaml' "$WORK" ;;
+    native) printf '' ;;
+    *) die "unknown arm '$1'" ;;
+  esac
+}
+
+start_scheduler() {
+  local config=$1 arm=$2
+  "$WORK/tahrs-scheduler" --config="$config" \
+    --secure-port="$SCHED_PORT" --leader-elect=false --v=3 \
+    >"$WORK/scheduler-$arm.log" 2>&1 &
+  SCHED_PID=$!
+  for _ in $(seq 1 30); do
+    kill -0 "$SCHED_PID" 2>/dev/null || { cat "$WORK/scheduler-$arm.log"; die "scheduler for $arm exited"; }
+    grep -q 'Starting Kubernetes Scheduler' "$WORK/scheduler-$arm.log" && return 0
+    sleep 1
+  done
+  die "scheduler for $arm did not start"
+}
+
+stop_scheduler() {
+  if [[ -n ${SCHED_PID:-} ]]; then
+    kill "$SCHED_PID" 2>/dev/null || true
+    wait "$SCHED_PID" 2>/dev/null || true
+    unset SCHED_PID
+  fi
+}
+
+# sample_rss writes the summed RSS (KiB) of the given PIDs every 300 ms until
+# the marker file is removed.
+sample_rss() {
+  local out=$1 marker=$2
+  shift 2
+  : >"$out"
+  while [[ -f $marker ]]; do
+    local total=0 pid rss
+    for pid in "$@"; do
+      [[ -n $pid ]] || continue
+      rss=$(ps -o rss= -p "$pid" 2>/dev/null | tr -d ' ' || true)
+      [[ -n $rss ]] && total=$((total + rss))
+    done
+    printf '%s\n' "$total" >>"$out"
+    sleep 0.3
+  done
+}
+
+wait_for_binding() {
+  local name=$1 deadline=$((SECONDS + 120))
+  while ((SECONDS < deadline)); do
+    local node
+    node=$(kubectl -n "$NAMESPACE" get pod "$name" -o jsonpath='{.spec.nodeName}' 2>/dev/null || true)
+    [[ -n $node ]] && return 0
+    sleep 0.05
+  done
+  return 1
+}
+
+apply_serially() {
+  local scheduler=$1
+  local i name
+  for ((i = 1; i <= PODS; i++)); do
+    name=$(printf 'cmp-%04d' "$i")
+    python3 - "$name" "$scheduler" "$TOLERATE_GPU" <<'PY' | kubectl -n "$NAMESPACE" create -f - >/dev/null
+import sys
+
+import yaml
+
+name, scheduler, tolerate = sys.argv[1], sys.argv[2], sys.argv[3] == "1"
+spec = {
+    "schedulerName": scheduler,
+    "containers": [{
+        "name": "pause",
+        "image": "registry.k8s.io/pause:3.10",
+        "resources": {"requests": {"cpu": "1", "memory": "2Gi"}},
+    }],
+}
+if tolerate:
+    spec["tolerations"] = [{
+        "key": "scheduling.example.com/dedicated",
+        "operator": "Equal",
+        "value": "tahrs",
+        "effect": "NoSchedule",
+    }]
+sys.stdout.write(yaml.safe_dump({
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {"name": name, "labels": {"app": "tahrs-compare"}},
+    "spec": spec,
+}, sort_keys=False))
+PY
+    wait_for_binding "$name" || die "pod $name never got a node in arm $scheduler"
+  done
+}
+
+# run_phase applies one arm's pods to a fresh namespace, records placements,
+# pod conditions, peak RSS and the namespace's final free capacity.
 run_phase() {
-  local tag=$1 scheduler=$2
+  local tag=$1 podsfile=$2
+  local scheduler
+  scheduler=$(arm_scheduler "$tag")
   kubectl delete namespace "$NAMESPACE" --ignore-not-found --timeout=120s >/dev/null 2>&1 || true
   kubectl create namespace "$NAMESPACE" >/dev/null
+
+  local marker="$WORK/sampling-$tag"
+  touch "$marker"
+  sample_rss "$WORK/rss-$tag.txt" "$marker" "${SCHED_PID:-}" "$KWOK_PID" &
+  SAMPLER_PID=$!
+
   local start
   start=$(date +%s%N)
-  kubectl -n "$NAMESPACE" apply -f "$WORK/pods-$scheduler.yaml" >/dev/null
-  local scheduled=0 deadline=$((SECONDS + 600))
-  while ((SECONDS < deadline)); do
-    scheduled=$(kubectl -n "$NAMESPACE" get pods -l app=tahrs-compare \
-      -o jsonpath='{range .items[*]}{.spec.nodeName}{"\n"}{end}' | grep -c . || true)
-    [[ $scheduled -ge $PODS ]] && break
-    sleep 0.5
-  done
+  if [[ $SERIAL == 1 ]]; then
+    apply_serially "$scheduler"
+  else
+    kubectl -n "$NAMESPACE" apply -f "$podsfile" >/dev/null
+    local scheduled=0 deadline=$((SECONDS + 600))
+    while ((SECONDS < deadline)); do
+      scheduled=$(kubectl -n "$NAMESPACE" get pods -l app=tahrs-compare \
+        -o jsonpath='{range .items[*]}{.spec.nodeName}{"\n"}{end}' | grep -c . || true)
+      [[ $scheduled -ge $PODS ]] && break
+      sleep 0.5
+    done
+  fi
   local end
   end=$(date +%s%N)
-  local ms=$(( (end - start) / 1000000 ))
+
+  rm -f "$marker"
+  wait "$SAMPLER_PID" 2>/dev/null || true
+  unset SAMPLER_PID
+
+  kubectl -n "$NAMESPACE" get pods -l app=tahrs-compare -o json >"$WORK/pods-$tag.json"
   kubectl -n "$NAMESPACE" get pods -l app=tahrs-compare \
     -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.nodeName}{"\n"}{end}' |
     grep -v $'\t$' >"$WORK/placements-$tag.tsv" || true
-  printf '      %s: %s/%s scheduled in %s ms\n' "$tag" "$scheduled" "$PODS" "$ms"
-  echo "$scheduled $ms" >"$WORK/timing-$tag.txt"
+  local placed
+  placed=$(wc -l <"$WORK/placements-$tag.tsv")
+  local ms=$(((end - start) / 1000000))
+  printf '      %s: %s/%s scheduled in %s ms\n' "$tag" "$placed" "$PODS" "$ms"
+  echo "$placed $ms" >"$WORK/timing-$tag.txt"
   kubectl -n "$NAMESPACE" delete pods --all --force --grace-period=0 >/dev/null 2>&1 || true
-  [[ $scheduled -ge $PODS ]] || die "$tag scheduled only $scheduled/$PODS pods"
+  [[ $placed -ge $PODS ]] || die "$tag placed only $placed/$PODS pods"
 }
 
-log "phase 1: tahrs-scheduler"
-"$WORK/tahrs-scheduler" --config="$WORK/kube-scheduler-config.yaml" \
-  --secure-port="$SCHED_PORT" --leader-elect=false --v=3 \
-  >"$WORK/scheduler.log" 2>&1 &
-SCHED_PID=$!
-for _ in $(seq 1 30); do
-  kill -0 "$SCHED_PID" 2>/dev/null || { cat "$WORK/scheduler.log"; die "scheduler exited"; }
-  grep -q 'Starting Kubernetes Scheduler' "$WORK/scheduler.log" && break
-  sleep 1
-done
-run_phase tahrs tahrs-scheduler
-kill "$SCHED_PID" 2>/dev/null || true
-wait "$SCHED_PID" 2>/dev/null || true
-unset SCHED_PID
+run_arm() {
+  local arm=$1 run=$2
+  local config
+  config=$(arm_config "$arm")
+  log "arm $arm (run $run/$RUNS)"
+  if [[ -n $config ]]; then
+    start_scheduler "$config" "$arm"
+  fi
+  run_phase "$arm" "$WORK/pods-$arm.yaml"
+  stop_scheduler
+  if [[ $RUNS -gt 1 ]]; then
+    cp "$WORK/placements-$arm.tsv" "$WORK/placements-$arm-run$run.tsv"
+    cp "$WORK/pods-$arm.json" "$WORK/pods-$arm-run$run.json"
+    cp "$WORK/rss-$arm.txt" "$WORK/rss-$arm-run$run.txt"
+    cp "$WORK/timing-$arm.txt" "$WORK/timing-$arm-run$run.txt"
+  fi
+}
 
-log "phase 2: built-in $NATIVE_SCHEDULER"
-run_phase native "$NATIVE_SCHEDULER"
+for arm in $ARMS; do
+  for ((run = 1; run <= RUNS; run++)); do
+    run_arm "$arm" "$run"
+  done
+done
 
 log "comparison"
-python3 - "$WORK" "$PODS" "$NATIVE_SCHEDULER" <<'PY'
+python3 - "$WORK" "$PODS" "$(printf '%s' "$ARMS")" "$RUNS" <<'PY'
 import collections
 import json
 import statistics
 import sys
 
-work, pods, native = sys.argv[1], int(sys.argv[2]), sys.argv[3]
+work, pod_count, arms, runs = sys.argv[1], int(sys.argv[2]), sys.argv[3].split(), int(sys.argv[4])
+GIB = 1 << 30
+
+
+def quantity_cpu_milli(value):
+    value = str(value)
+    if value.endswith("m"):
+        return int(value[:-1])
+    return int(float(value) * 1000)
+
+
+def quantity_bytes(value):
+    value = str(value)
+    for suffix, factor in (("Gi", GIB), ("Mi", 1 << 20), ("Ki", 1 << 10)):
+        if value.endswith(suffix):
+            return int(float(value[: -len(suffix)]) * factor)
+    return int(float(value))
+
 
 nodes = {}
 for item in json.load(open(f"{work}/nodes.json"))["items"]:
@@ -252,9 +428,11 @@ for item in json.load(open(f"{work}/nodes.json"))["items"]:
     alloc = item["status"]["allocatable"]
     nodes[item["metadata"]["name"]] = {
         "class": labels.get("scheduling.example.com/class", "?"),
-        "cpu": int(alloc["cpu"]),
-        "gpu": int(alloc.get("nvidia.com/gpu", 0)),
+        "cpu": quantity_cpu_milli(alloc.get("cpu", 0)),
+        "mem": quantity_bytes(alloc.get("memory", 0)),
+        "gpu": int(alloc.get("nvidia.com/gpu", 0) or 0),
     }
+
 
 def placements(tag):
     out = {}
@@ -266,69 +444,108 @@ def placements(tag):
         out[name] = node
     return out
 
-def timing(tag):
-    scheduled, ms = open(f"{work}/timing-{tag}.txt").read().split()
-    return int(ms)
+
+def peak_rss_mib(tag):
+    path = f"{work}/rss-{tag}.txt"
+    try:
+        values = [int(line) for line in open(path) if line.strip()]
+    except FileNotFoundError:
+        return 0.0
+    return max(values) / 1024 if values else 0.0
+
 
 def summarize(tag):
     placed = placements(tag)
     per_node = collections.Counter(placed.values())
     counts = list(per_node.values())
     by_class = collections.Counter()
-    cpu_by_node = collections.Counter()
     for node, count in per_node.items():
-        info = nodes.get(node, {"class": "?", "cpu": 1, "gpu": 0})
-        by_class[f"{info['class']}-{info['cpu']}c"] += count
-        cpu_by_node[node] = count
-    on_gpu = sum(c for n, c in per_node.items() if nodes.get(n, {}).get("gpu", 0) > 0)
-    utilisation = [cpu_by_node.get(n, 0) / i["cpu"] for n, i in nodes.items()]
-    mean = statistics.mean(utilisation) if utilisation else 0
+        info = nodes.get(node, {"class": "?", "cpu": 1000})
+        by_class[f"{info['class']}-{info['cpu'] // 1000}c"] += count
+
+    # Free capacity left on each node after this arm, in the units the batch
+    # pods use: one pod is 1 CPU / 2 GiB.
+    fits_4c8g = 0
+    fits_8c16g = 0
+    for name, info in nodes.items():
+        used = per_node.get(name, 0)
+        free_cpu = info["cpu"] - used * 1000
+        free_mem = info["mem"] - used * 2 * GIB
+        if free_cpu >= 4000 and free_mem >= 8 * GIB:
+            fits_4c8g += 1
+        if free_cpu >= 8000 and free_mem >= 16 * GIB:
+            fits_8c16g += 1
+
+    on_gpu = sum(count for node, count in per_node.items() if nodes.get(node, {}).get("gpu", 0) > 0)
+    utilisation = [per_node.get(name, 0) / max(1, info["cpu"] // 1000) for name, info in nodes.items()]
+    mean = statistics.mean(utilisation) if utilisation else 0.0
     cv = statistics.pstdev(utilisation) / mean if mean else 0.0
-    idle = sum(1 for n in nodes if n not in per_node)
+    placed_count, ms = open(f"{work}/timing-{tag}.txt").read().split()
+    rate = 1000.0 * int(placed_count) / int(ms) if int(ms) > 0 else 0.0
     return {
-        "placed": len(placed),
-        "ms": timing(tag),
+        "placed": int(placed_count),
+        "ms": int(ms),
         "used": len(per_node),
-        "idle": idle,
-        "mean": statistics.mean(counts) if counts else 0,
-        "sd": statistics.pstdev(counts) if len(counts) > 1 else 0,
+        "idle": len(nodes) - len(per_node),
+        "mean": statistics.mean(counts) if counts else 0.0,
+        "sd": statistics.pstdev(counts) if len(counts) > 1 else 0.0,
         "max": max(counts) if counts else 0,
         "min": min(counts) if counts else 0,
-        "gpu_pods": on_gpu,
-        "by_class": by_class,
+        "gpu": on_gpu,
         "cv": cv,
+        "rate": rate,
+        "fits4": fits_4c8g,
+        "fits8": fits_8c16g,
+        "rss": peak_rss_mib(tag),
+        "by_class": by_class,
         "per_node": per_node,
     }
 
-def cls_list(counter):
-    return ", ".join(f"{k}={v}" for k, v in sorted(counter.items()))
 
-rows = [("tahrs", summarize("tahrs")), ("native", summarize("native"))]
-w = (22, 12, 12)
-print(f"{'metric':<{w[0]}}{'tahrs':>{w[1]}}{'native':>{w[2]}}")
-print("-" * sum(w))
-def line(label, a, b):
-    print(f"{label:<{w[0]}}{a:>{w[1]}}{b:>{w[2]}}")
+data = {arm: summarize(arm) for arm in arms}
+width = 24
+print(f"{'metric':<{width}}" + "".join(f"{arm:>14}" for arm in arms))
+print("-" * (width + 14 * len(arms)))
+for label, key, fmt in [
+    ("pods placed", "placed", "d"),
+    ("wall clock to bind (ms)", "ms", "d"),
+    ("nodes used", "used", "d"),
+    ("nodes left idle", "idle", "d"),
+    ("pods per used node (mean)", "mean", ".2f"),
+    ("pods per used node (sd)", "sd", ".2f"),
+    ("busiest node (pods)", "max", "d"),
+    ("quietest used node (pods)", "min", "d"),
+    ("pods on GPU nodes", "gpu", "d"),
+    ("CPU utilisation CV", "cv", ".3f"),
+    ("binding throughput (pods/s)", "rate", ".1f"),
+    ("nodes that still fit 4C/8Gi", "fits4", "d"),
+    ("nodes that still fit 8C/16Gi", "fits8", "d"),
+    ("peak RSS sampled (MiB)", "rss", ".0f"),
+]:
+    row = "".join(f"{data[arm][key]:>14{fmt}}" for arm in arms)
+    print(f"{label:<{width}}{row}")
 
-line("pods placed", rows[0][1]["placed"], rows[1][1]["placed"])
-line("wall clock to bind (ms)", rows[0][1]["ms"], rows[1][1]["ms"])
-line("nodes used", rows[0][1]["used"], rows[1][1]["used"])
-line("nodes left idle", rows[0][1]["idle"], rows[1][1]["idle"])
-line("pods per used node (mean)", f"{rows[0][1]['mean']:.2f}", f"{rows[1][1]['mean']:.2f}")
-line("pods per used node (sd)", f"{rows[0][1]['sd']:.2f}", f"{rows[1][1]['sd']:.2f}")
-line("busiest node (pods)", rows[0][1]["max"], rows[1][1]["max"])
-line("quietest used node (pods)", rows[0][1]["min"], rows[1][1]["min"])
-line("pods on GPU nodes", rows[0][1]["gpu_pods"], rows[1][1]["gpu_pods"])
-line("CPU utilisation CV", f"{rows[0][1]['cv']:.3f}", f"{rows[1][1]['cv']:.3f}")
-print()
-print("pods per node class")
-for tag, row in rows:
-    print(f"  {tag:<8}{cls_list(row['by_class'])}")
-print()
-print("busiest nodes")
-for tag, row in rows:
-    top = ", ".join(f"{n}={c}" for n, c in row["per_node"].most_common(6))
-    print(f"  {tag:<8}{top}")
+print("\npods per node class")
+for arm in arms:
+    print(f"  {arm:<8}" + ", ".join(f"{k}={v}" for k, v in sorted(data[arm]["by_class"].items())))
+
+print("\nbusiest nodes")
+for arm in arms:
+    top = ", ".join(f"{n}={c}" for n, c in data[arm]["per_node"].most_common(6))
+    print(f"  {arm:<8}{top}")
+
+if runs > 1:
+    print("\ndeterminism (run1 vs run2 placement maps)")
+    for arm in arms:
+        first = {}
+        second = {}
+        for name, node in placements(f"{arm}-run1") .items():
+            first[name] = node
+        for name, node in placements(f"{arm}-run2").items():
+            second[name] = node
+        shared = set(first) & set(second)
+        same = sum(1 for name in shared if first[name] == second[name])
+        print(f"  {arm:<8}{same}/{len(shared)} pods on the same node")
 PY
 
 if [[ $KEEP == 1 ]]; then

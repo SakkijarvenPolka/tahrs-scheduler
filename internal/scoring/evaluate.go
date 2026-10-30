@@ -44,6 +44,11 @@ func Evaluate(q model.TaskRequests, snap model.NodeSnapshot, p model.ProfileView
 	if !packUsed {
 		pack = Neutral
 	}
+	// Spread mode reverses the pack term. Neutral (0.5) is symmetric under the
+	// reversal, so a skipped component keeps its neutral value.
+	if p.PackMode == model.PackModeSpread {
+		pack = 1 - pack
+	}
 
 	combined := clamp01(p.Alpha*fit + p.Beta*pack)
 
@@ -73,6 +78,7 @@ func Evaluate(q model.TaskRequests, snap model.NodeSnapshot, p model.ProfileView
 		FitSkipped:  !fitUsed,
 		Pack:        pack,
 		PackSkipped: !packUsed,
+		PackMode:    p.PackMode,
 		Combined:    combined,
 		PrePenalty:  prePenalty,
 		GPUPenalty:  penalty,

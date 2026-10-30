@@ -7,6 +7,8 @@
 // for scoring types.
 package config
 
+import "strings"
+
 const (
 	// DefaultGPUResourceName is used when gpuResourceName is not set.
 	DefaultGPUResourceName = "nvidia.com/gpu"
@@ -34,6 +36,7 @@ type Profile struct {
 	Beta          float64            `json:"beta"`
 	FitWeights    map[string]float64 `json:"fitWeights"`
 	PackWeights   map[string]float64 `json:"packWeights"`
+	PackMode      string             `json:"packMode"`
 	GPUNodePolicy string             `json:"gpuNodePolicy"`
 }
 
@@ -63,6 +66,7 @@ type rawProfile struct {
 	Beta          *float64           `json:"beta"`
 	FitWeights    map[string]float64 `json:"fitWeights"`
 	PackWeights   map[string]float64 `json:"packWeights"`
+	PackMode      string             `json:"packMode"`
 	GPUNodePolicy string             `json:"gpuNodePolicy"`
 }
 
@@ -88,6 +92,7 @@ func (r *rawSetting) toSetting() *Setting {
 			Beta:          DefaultBeta,
 			FitWeights:    normaliseWeights(rp.FitWeights),
 			PackWeights:   normaliseWeights(rp.PackWeights),
+			PackMode:      normalisePackMode(rp.PackMode),
 			GPUNodePolicy: normalisePolicy(rp.GPUNodePolicy),
 		}
 		if rp.Alpha != nil {
@@ -122,4 +127,19 @@ func normalisePolicy(policy string) string {
 		return "avoid"
 	}
 	return policy
+}
+
+// normalisePackMode lower-cases the mode and defaults to "pack", the direction
+// the scheduler had before the field existed. An unknown value is passed through
+// so that validation reports it instead of the loader silently rewriting it.
+func normalisePackMode(mode string) string {
+	trimmed := strings.ToLower(strings.TrimSpace(mode))
+	switch trimmed {
+	case "":
+		return PackModePack
+	case PackModePack, PackModeSpread:
+		return trimmed
+	default:
+		return trimmed
+	}
 }

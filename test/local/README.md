@@ -87,19 +87,39 @@ NODEFILE=$PWD/test/local/nodes-200.yaml PODS=300 ./test/local/run.sh
 k3s v1.36.5、本机）：4.7 s 全部调度完成，约 15 ms/Pod；落点集中在小 CPU 节点（8C/32Gi
 每台 8 个），符合 fit/pack 同向的装箱行为。这是行为观察，不是性能基准。
 
-## 与原生调度器对比
+## 三方对照：pack / spread / 原生
 
-`compare.sh` 用同一批伪节点、同一份 Pod 模板跑两轮：第一轮把 tahrs 二进制作为第二调度器
-启动，第二轮把 Pod 交给集群内置的 kube-scheduler，然后比较落点分布。两轮之间 Pod 会被清空，
-节点从零开始记账，所以两轮的起点相同：
+`compare.sh` 在完全相同的伪节点、Pod 模板和空集群上依次跑几轮，只有调度器（以及 spread 轮
+里的一个画像字段）不同：
+
+| 轮次 | 调度器 | 打分 |
+| --- | --- | --- |
+| `tahrs` | tahrs 二进制，发布配置 | `α·fit + β·pack` |
+| `spread` | 同一个二进制、同一个画像名 | `α·fit + β·(1−pack)`，画像里只多一行 `packMode: spread` |
+| `native` | 集群内置 kube-scheduler | 上游默认插件集（不是控制臂，只是外部参照） |
+
+`spread` 轮是**受控对照**：除 pack 项的方向外，fit 权重、α/β、GPU 罚分、画像解析全部不变，
+两轮的差异只能来自这一项。它不等于上游 `LeastAllocated`——pack 用的是「放上去之后」的使用率
+`u'`，取反后等价于按 RMS 使用率排序，大节点天然更占便宜，所以「spread」轮会先填大节点而不是
+把负载摊平。这本身就是结论的一部分，不要把它当成「打散」的等价物。
 
 ```bash
-./test/local/compare.sh                    # 300 Pod，允许进 GPU 节点
-TOLERATE_GPU=0 ./test/local/compare.sh     # 两轮都不许进 GPU 节点
-PODS=600 ./test/local/compare.sh           # 超过单个小节点类别的容量
+./test/local/compare.sh                                            # 三轮，300 Pod，允许进 GPU 节点
+ARMS="tahrs spread" ./test/local/compare.sh                        # 只跑受控的两轮
+ARMS="tahrs spread native" SERIAL=1 RUNS=2 ./test/local/compare.sh # 串行到达 + 重复两遍，查确定性
+TOLERATE_GPU=0 ./test/local/compare.sh                             # 都不许进 GPU 节点
+PODS=600 ./test/local/compare.sh                                   # 超过单个小节点类别的容量
 ```
 
-一次实测（200 节点、300 Pod、k3s v1.36.5、本机）：
+指标：落点分布（用到的节点、每节点均值/标准差/最大、按节点类别拆分）、GPU 节点落点、
+CPU 利用率变异系数、绑定吞吐、**碎片度**（跑完后还能放下一个 4C/8Gi 或 8C/16Gi Pod 的
+节点数）、采样到的峰值 RSS（tahrs 两轮含调度器进程，native 轮只有 kwok——内置调度器跑在
+k3s-server 进程里，不在采样范围）。
+
+`SERIAL=1` 逐个创建 Pod 并等前一个拿到 `nodeName` 再建下一个，输入顺序确定；`RUNS=2` 会把
+每一轮重跑一遍，并在报告末尾逐 Pod 比较两遍的落点是否一致，这是确定性检查。
+
+两轮对照的早期实测（200 节点、300 Pod、k3s v1.36.5、本机，`ARMS="tahrs native"`）：
 
 | 指标 | tahrs | 原生 |
 | --- | --- | --- |
@@ -109,19 +129,9 @@ PODS=600 ./test/local/compare.sh           # 超过单个小节点类别的容�
 | 落在 GPU 节点的 Pod | 0 | 169 |
 | CPU 利用率变异系数 | 2.71 | 0.60 |
 
-去掉污点容忍（`TOLERATE_GPU=0`，两轮都只能进 CPU 节点）后结论不变：tahrs 用 21 个节点、
-每节点 14.3 个、最大 32；原生用 89 个节点、每节点 3.4 个、最大 5。原生偏好大节点
-（`cpu-32c` 拿到 217 个），tahrs 先塞满小节点（`cpu-8c` 72、`cpu-16c` 144、`cpu-32c` 84）。
-
 差异来自打分方向：tahrs 的 fit 与 pack 同向，都把 Pod 往已经装得多的节点上推，所以是装箱；
 原生 `LeastAllocated` 把 Pod 往空闲比例高的节点上推，所以是打散。`gpuAvoidPenalty` 在 Pod
 带污点容忍时仍然把普通 Pod 挡在 GPU 节点外，原生没有这层语义（169 个 Pod 直接进了 GPU 节点）。
-两者耗时接近；这组数字只说明分布差异，不是性能基准。
-
-同参数重复运行时，整体形状稳定（tahrs 24 个节点、每节点 12.5 个、GPU 节点 0 个；
-原生 152 个节点、每节点 2.0 个、GPU 节点 173 个），但具体落到哪一台会变，因为 300 个
-Pod 是并发到达的，调度器按到达顺序逐个决策；`busiest node` 的两次数值因此是 28 和 32
-（后者是一个 32C 节点被填满）。
 
 ## 加一个场景
 

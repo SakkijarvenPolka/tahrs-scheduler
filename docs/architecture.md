@@ -113,6 +113,15 @@ Pod 照常被绑定，配置错误永远不会暴露。所以：
 而是用 `gpuNodePolicy` 加一个常数罚分（默认 30）——它的语义是「CPU 负载不该被放到 GPU 池里」的硬偏好，
 平滑的权重表达不了这种离散意图。
 
+**方向开关 `packMode`**（默认 `pack`）：pack 组件还可以整项取反。`packMode: spread` 把该项变成
+`sqrt( Σ v_k(1 − u'_k)² / Σ v_k )`，节点越空分越高。fit 权重、α/β、GPU 罚分、画像解析全部不变，
+所以它只用于**受控对照**（同一个二进制、同一个画像名，只切换这一个字段），不是推荐给运维的调参手段：
+一个画像到底该装箱还是打散，仍要先由业务语义决定，而不是靠它「调出好看的落点」。
+
+它也不等于上游 `LeastAllocated`：pack 用的是放上去之后的使用率 `u'`，取反后等价于按 RMS 使用率排序，
+容量更大的节点天然更占便宜，因此大节点会先被填。`internal/scoring/packmode_test.go` 固定了两点：
+同一组输入下，两种模式对空节点和满节点的排序必然相反；被跳过的维度仍走中性值 0.5，不受方向影响。
+
 ## 6. 为什么 score 段禁用 NodeResourcesFit 与 BalancedAllocation，但保留它们的 Filter
 
 `deploy/base/configmap.yaml` 里只动了 `score` 段，`filter` 段保持默认插件集：

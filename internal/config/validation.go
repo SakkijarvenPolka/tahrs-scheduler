@@ -20,6 +20,14 @@ const (
 	PolicyAvoid = "avoid"
 )
 
+// Pack component directions accepted in packMode.
+const (
+	// PackModePack scores a node higher the fuller it becomes (default).
+	PackModePack = "pack"
+	// PackModeSpread scores a node higher the emptier it stays.
+	PackModeSpread = "spread"
+)
+
 // ValidationError aggregates every problem found in a configuration file, so a
 // single failed start lists all mistakes instead of only the first one.
 type ValidationError struct {
@@ -93,6 +101,11 @@ func (s *Setting) Validate() error {
 		if allZeroWeights(p.FitWeights, p.PackWeights) {
 			add("profiles[%s]: all fitWeights and packWeights are 0", name)
 		}
+		// An empty value means the default; the loader always fills it in, this
+		// only keeps programmatically built Settings valid.
+		if p.PackMode != "" && !isPackMode(p.PackMode) {
+			add("profiles[%s].packMode=%q must be %q or %q", name, p.PackMode, PackModePack, PackModeSpread)
+		}
 	}
 
 	if len(problems) == 0 {
@@ -108,6 +121,10 @@ func isFinite(v float64) bool {
 
 func isPolicy(policy string) bool {
 	return policy == PolicyAllow || policy == PolicyAvoid
+}
+
+func isPackMode(mode string) bool {
+	return mode == PackModePack || mode == PackModeSpread
 }
 
 func validateWeights(profile, field string, weights map[string]float64) []string {

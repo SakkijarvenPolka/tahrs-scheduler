@@ -78,8 +78,8 @@ func (l *Loaded) Fingerprint(build string) string {
 			b.WriteString(" ")
 		}
 		p := s.Profiles[name]
-		fmt.Fprintf(&b, "%s{alpha=%.2f beta=%.2f fit=%s pack=%s policy=%s}",
-			name, p.Alpha, p.Beta, formatWeights(p.FitWeights), formatWeights(p.PackWeights), p.GPUNodePolicy)
+		fmt.Fprintf(&b, "%s{alpha=%.2f beta=%.2f fit=%s pack=%s mode=%s policy=%s}",
+			name, p.Alpha, p.Beta, formatWeights(p.FitWeights), formatWeights(p.PackWeights), p.PackMode, p.GPUNodePolicy)
 	}
 	b.WriteString("]")
 	return b.String()

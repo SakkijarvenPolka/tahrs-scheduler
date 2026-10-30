@@ -17,6 +17,20 @@ const (
 	GPUPolicyAvoid GPUPolicy = "avoid"
 )
 
+// PackMode selects the direction of the pack component.
+type PackMode string
+
+const (
+	// PackModePack is the default direction: the fuller a node ends up, the
+	// higher it scores, so workloads accumulate on the nodes they already fill.
+	PackModePack PackMode = "pack"
+	// PackModeSpread reverses the component: the emptier a node stays, the
+	// higher it scores. Every other factor (fit weights, alpha, beta, the GPU
+	// penalty) stays identical, which is what makes pack versus spread a
+	// controlled comparison instead of a tuning exercise.
+	PackModeSpread PackMode = "spread"
+)
+
 // Weights holds the per-dimension weight of one scoring component.
 type Weights struct {
 	CPU    float64
@@ -66,6 +80,7 @@ type ProfileView struct {
 	Beta            float64
 	FitWeights      Weights
 	PackWeights     Weights
+	PackMode        PackMode
 	GPUPolicy       GPUPolicy
 	GPUAvoidPenalty int64
 }
@@ -97,6 +112,11 @@ func (p ProfileView) Validate() error {
 	if err := p.PackWeights.Validate("pack"); err != nil {
 		return fmt.Errorf("profile %q: %w", p.Name, err)
 	}
+	switch p.PackMode {
+	case "", PackModePack, PackModeSpread:
+	default:
+		return fmt.Errorf("profile %q: unknown pack mode %q", p.Name, p.PackMode)
+	}
 	if p.FitWeights.IsZero() && p.PackWeights.IsZero() {
 		return fmt.Errorf("profile %q: all fit and pack weights are zero", p.Name)
 	}
@@ -120,10 +140,13 @@ type Breakdown struct {
 	// FitSkipped reports that every fit dimension was skipped (zero request),
 	// in which case the neutral value Neutral was used.
 	FitSkipped bool
-	// Pack is the packing score in [0,1].
+	// Pack is the pack component as used in Combined: the packing score in
+	// [0,1] in pack mode, its complement in spread mode.
 	Pack float64
 	// PackSkipped reports that every pack dimension was skipped.
 	PackSkipped bool
+	// PackMode is the direction the pack component was evaluated with.
+	PackMode PackMode
 	// Combined is alpha*Fit+beta*Pack clamped to [0,1] before rounding.
 	Combined float64
 	// PrePenalty is Combined rounded to an integer score in [0,100].

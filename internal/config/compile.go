@@ -27,6 +27,7 @@ func (s *Setting) Compile() (map[string]model.ProfileView, error) {
 			Beta:            p.Beta,
 			FitWeights:      fit,
 			PackWeights:     pack,
+			PackMode:        model.PackMode(p.PackMode),
 			GPUPolicy:       model.GPUPolicy(p.GPUNodePolicy),
 			GPUAvoidPenalty: s.GPUAvoidPenalty,
 		}
