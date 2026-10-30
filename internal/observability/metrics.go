@@ -26,6 +26,7 @@ type Metrics struct {
 	scoreComponent    *metrics.HistogramVec
 	invalidNumeric    *metrics.CounterVec
 	gpuPenalty        *metrics.CounterVec
+	gpuLedgerBlind    *metrics.CounterVec
 	configInfo        *metrics.GaugeVec
 }
 
@@ -75,6 +76,11 @@ func New() *Metrics {
 			Name:      "gpu_penalty_total",
 			Help:      "Number of times the GPU avoid policy was applied.",
 		}, []string{"profile"}),
+		gpuLedgerBlind: metrics.NewCounterVec(&metrics.CounterOpts{
+			Namespace: Namespace,
+			Name:      "gpu_ledger_blind_total",
+			Help:      "Number of scheduling cycles in which the GPU dimension could not see the Pod's device demand, by reason.",
+		}, []string{"reason"}),
 		configInfo: metrics.NewGaugeVec(&metrics.GaugeOpts{
 			Namespace: Namespace,
 			Name:      "config_info",
@@ -90,6 +96,7 @@ func (m *Metrics) register() {
 		m.scoreComponent,
 		m.invalidNumeric,
 		m.gpuPenalty,
+		m.gpuLedgerBlind,
 		m.configInfo,
 	)
 }
@@ -123,6 +130,18 @@ func (m *Metrics) InvalidNumeric(kind string) {
 		return
 	}
 	m.invalidNumeric.WithLabelValues(kind).Inc()
+}
+
+// GPULedgerBlind records a cycle in which the GPU dimension had no allocatable
+// source: no feasible node advertised the configured extended resource. reason
+// separates the two shapes this takes ("extended_resource" for a Pod that asks
+// for GPUs through a DRA bridged extended resource, "device_claims" for a Pod
+// that only holds claims). Both are bounded strings, never Pod or node names.
+func (m *Metrics) GPULedgerBlind(reason string) {
+	if m == nil {
+		return
+	}
+	m.gpuLedgerBlind.WithLabelValues(reason).Inc()
 }
 
 // RecordConfig exposes the loaded configuration as an info gauge.

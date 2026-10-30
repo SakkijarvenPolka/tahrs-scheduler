@@ -195,7 +195,11 @@ make replace-sync     # 依赖 /home/qiai/go/pkg/mod 里的 k8s.io/kubernetes@v0
 - **单可行节点不调用 Score（F13）**：意味着在单节点集群里，评分公式完全不会被验证，而画像校验在 PreFilter 仍生效。
   评测用的更多节点场景走 `test/framework` 与 `tahrsctl replay`。
 - **不支持 DRA（E4）**：`ResourceClaim` 的分配不进入账本。v1.36 默认启用 DRA，`ClusterRole` 里保留了相关规则，
-  但账本口径没有接 `UseDRANodeAllocatableResourceClaimStatus` 之类的选项。
+  但账本口径没有接 `UseDRANodeAllocatableResourceClaimStatus` 之类的选项。两处补偿让退化可见而不是静默：
+  `PreScore` 发现「Pod 要 GPU 但没有任何可行节点公布该扩展资源」时计入
+  `tahrs_gpu_ledger_blind_total{reason=...}`（`extended_resource` / `device_claims`，进程内只告警一次）；
+  `scoring.WithDeviceClaims` 让持 `spec.resourceClaims` 的 Pod 跳过 GPU 回避罚分，因为它的请求向量里没有 GPU。
+  账本口径由 `internal/kubeadapter/draledger_test.go` 的三条断言锁住。
 - **伪 GPU 不等价于真实分配**：测试用 `nvidia.com/gpu` 这个扩展资源名模拟，真实集群里 MIG、时间片共享、`nvidia.com/mig-*`
   都不是这个模型能表达的。
 - **伪节点的观察在 `test/local` 里**：`./test/local/run.sh` 用 KWOK 伪造 4 个节点（2 个 CPU、2 个 GPU），

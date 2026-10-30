@@ -25,7 +25,10 @@ const MinScore = 0
 // the GPU penalty is subtracted after rounding, and the result is then floored
 // at MinScore. Rounding after the penalty would make the penalty quantisation
 // dependent and could produce a negative score.
-func Evaluate(q model.TaskRequests, snap model.NodeSnapshot, p model.ProfileView) (model.Breakdown, error) {
+//
+// Options carry Pod properties that the resource vector cannot express. They do
+// not change the arithmetic, only which terms apply (see WithDeviceClaims).
+func Evaluate(q model.TaskRequests, snap model.NodeSnapshot, p model.ProfileView, opts ...Option) (model.Breakdown, error) {
 	if err := p.Validate(); err != nil {
 		return model.Breakdown{}, err
 	}
@@ -58,7 +61,7 @@ func Evaluate(q model.TaskRequests, snap model.NodeSnapshot, p model.ProfileView
 	}
 
 	prePenalty := int64(math.Round(MaxScore * combined))
-	penalty, applied := GPUPenalty(q, snap, p)
+	penalty, applied := GPUPenalty(q, snap, p, opts...)
 	if !applied {
 		penalty = 0
 	}
