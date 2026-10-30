@@ -4,7 +4,7 @@ VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 GO ?= go
 GOFMT ?= gofmt
 
-.PHONY: all build test lint vet fmt image manifests rbac replace-sync clean
+.PHONY: all build test lint vet fmt image manifests rbac local-test replace-sync clean
 
 all: lint test build
 
@@ -24,6 +24,9 @@ fmt: ## format the tree in place
 lint: vet ## gofmt check + go vet
 	@files="$$( $(GOFMT) -l . )"; \
 	if [ -n "$$files" ]; then echo "gofmt needs to run on:"; echo "$$files"; exit 1; fi
+
+local-test: ## run the KWOK fake-node scheduling test against the current cluster
+	./test/local/run.sh
 
 image: ## build the distroless image
 	docker build --build-arg VERSION=$(VERSION) -t $(IMAGE) .

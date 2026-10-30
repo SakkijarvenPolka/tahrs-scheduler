@@ -1,0 +1,119 @@
+# Fake nodes for test/local/run.sh, created and kept alive by KWOK
+# (https://kwok.sigs.k8s.io). Only the kubelet is simulated: the API server,
+# the scheduling framework and the tahrs binary are the real ones.
+#
+# Labels mirror deploy/README.md's pool contract: every managed node carries
+# scheduling.example.com/pool=heterogeneous and GPU nodes add the dedicated
+# taint that keeps non-tahrs workloads away. Because the tahrs profile config
+# also sets NodeAffinity.addedAffinity, a pod that forgets nodeAffinity still
+# cannot land outside this pool -- run.sh checks that the real node in the
+# cluster (which has no pool label) is never picked.
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-1
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-1
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: "true"
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: "32"
+    memory: 128Gi
+    pods: "110"
+  allocatable:
+    cpu: "32"
+    memory: 128Gi
+    pods: "110"
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-cpu-2
+  labels:
+    kubernetes.io/hostname: tahrs-fake-cpu-2
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: "true"
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: cpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+status:
+  capacity:
+    cpu: "8"
+    memory: 32Gi
+    pods: "110"
+  allocatable:
+    cpu: "8"
+    memory: 32Gi
+    pods: "110"
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-1
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-1
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: "true"
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+status:
+  capacity:
+    cpu: "32"
+    memory: 128Gi
+    pods: "110"
+    nvidia.com/gpu: "4"
+  allocatable:
+    cpu: "32"
+    memory: 128Gi
+    pods: "110"
+    nvidia.com/gpu: "4"
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: tahrs-fake-gpu-2
+  labels:
+    kubernetes.io/hostname: tahrs-fake-gpu-2
+    kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    type: kwok
+    tahrs.dev/local-test: "true"
+    scheduling.example.com/pool: heterogeneous
+    scheduling.example.com/class: gpu
+  annotations:
+    kwok.x-k8s.io/node: fake
+spec:
+  taints:
+  - key: scheduling.example.com/dedicated
+    value: tahrs
+    effect: NoSchedule
+status:
+  capacity:
+    cpu: "64"
+    memory: 256Gi
+    pods: "110"
+    nvidia.com/gpu: "8"
+  allocatable:
+    cpu: "64"
+    memory: 256Gi
+    pods: "110"
+    nvidia.com/gpu: "8"
