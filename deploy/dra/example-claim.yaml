@@ -1,0 +1,49 @@
+# 纯 DRA 路径：容器通过 ResourceClaim 拿到一张显存 >= 8Gi 的 GPU。
+#
+# 注意这个 Pod 不写 nvidia.com/gpu，所以在 tahrs 眼里它是 0 卡任务；
+# 节点上被占用的显存不会进入 NodeSnapshot.Used.GPUs。这正是要观察的缺口。
+#
+# 前提：DRA 驱动已安装（见 README.md），DeviceClass gpu.nvidia.com 由 chart 创建。
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: single-gpu-8g
+  namespace: dra-probe
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu
+          exactly:
+            deviceClassName: gpu.nvidia.com
+            count: 1
+            capacity:
+              requests:
+                # 只接受显存 >= 8Gi 的设备；这台机器只有一张 12GB 卡，等于是"任意一张卡"。
+                memory: 8Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dra-probe
+  namespace: dra-probe
+  annotations:
+    scheduling.example.com/profile: gpu-inference-v1
+spec:
+  schedulerName: tahrs-scheduler
+  restartPolicy: Never
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: tahrs
+      effect: NoSchedule
+  containers:
+    - name: ctr
+      image: ubuntu:22.04
+      command: ["bash", "-c", "nvidia-smi -L; sleep 3600"]
+      resources:
+        claims:
+          - name: gpu
+  resourceClaims:
+    - name: gpu
+      resourceClaimTemplateName: single-gpu-8g

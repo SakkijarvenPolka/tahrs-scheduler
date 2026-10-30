@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# 示例负载（不含驱动本身；驱动用 helm 安装，见 README.md）。
+#   kubectl apply -k deploy/dra
+# 回滚：
+#   kubectl delete -k deploy/dra
+resources:
+  - namespace.yaml
+  - example-claim.yaml
+  - example-bridge-pod.yaml

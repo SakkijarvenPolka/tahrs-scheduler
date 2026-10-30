@@ -1,0 +1,33 @@
+# 桥路径：普通地请求扩展资源 nvidia.com/gpu: 1，由 DeviceClass 的
+# spec.extendedResourceName 自动转成 ResourceClaim。
+#
+# 前提（缺一不可）：
+#   1. DRA 驱动已安装；
+#   2. DeviceClass gpu.nvidia.com 存在且 extendedResourceName == nvidia.com/gpu；
+#   3. 现有 nvidia-device-plugin 必须先停掉（scale 到 0），否则两套系统同时
+#      认领同一个扩展资源，账本会互相打脸。
+#
+# 这个 Pod 的 requests.GPUs 仍然是 1，tahrs 的 GPU 维度照常参与打分——
+# 与纯扩展资源模式下的分数应当一致，这就是"桥的分数不变性"。
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bridge-probe
+  namespace: dra-probe
+  annotations:
+    scheduling.example.com/profile: gpu-inference-v1
+spec:
+  schedulerName: tahrs-scheduler
+  restartPolicy: Never
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: tahrs
+      effect: NoSchedule
+  containers:
+    - name: ctr
+      image: ubuntu:22.04
+      command: ["bash", "-c", "nvidia-smi -L; sleep 3600"]
+      resources:
+        limits:
+          nvidia.com/gpu: 1

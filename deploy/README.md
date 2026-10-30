@@ -16,6 +16,7 @@
 | `base/deployment.yaml` | 单副本 Deployment，配置只读挂载 |
 | `base/kustomization.yaml` | `kubectl apply -k deploy/base` |
 | `common/examples/gpu-demo.yaml` | GPU 工作负载接入示例（§9） |
+| `dra/` | DRA 现场验证清单与示例，**尚未执行**，先看 `dra/README.md` |
 
 ## RBAC 的来源
 
